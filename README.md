@@ -16,7 +16,7 @@ To install all dependencies, run:
 pip install -r requirements.txt
 ```
 
-- [Data Preprocessing and Exploratory Data Analysis](./Exploratory%20Data%20Analysis)
-- Centralized Bayesian Networks Implementation
+1. [Data Preprocessing and Exploratory Data Analysis](./Exploratory%20Data%20Analysis)
+2. Centralized Bayesian Networks Implementation
   
   
