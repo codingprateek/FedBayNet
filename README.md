@@ -1,5 +1,5 @@
 # FedBayNet
-Prediction of Chronic Kidney Disease using Bayesian Networks through Federated Learning
+Prediction of Chronic Kidney Disease (CKD) using Bayesian Networks through Federated Learning
 
 ## Objective
 The primary objective of this project is to develop a robust predictive model for CKD by utilizing BNs to capture and model probabilistic relationships among various risk factors. To address the critical challenge of patient data privacy and scarcity in healthcare machine learning applications, the project integrates a FL approach that enables multiple healthcare institutions to collaboratively train the BN model on decentralized data. This ensures that sensitive patient data is never exposed outside the source institution, minimizing the risk of data breaches and unauthorized access. 
