@@ -1,0 +1,4 @@
+Estimator,Score,Edges,Nodes
+Hill Climb Search,-5055.31332727981,26,28
+Tree Search,-6207.4472556067685,27,28
+PC algorithm,Failed,22,28
