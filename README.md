@@ -19,7 +19,8 @@ pip install -r requirements.txt
 1. [Data Preprocessing and Exploratory Data Analysis](./Exploratory%20Data%20Analysis)
 2. Centralized Bayesian Networks Implementation
    ```
-   python main.py --data <path/to/input_data.csv> --output Results
+   cd "Centralized Learning"
+   python main.py --data ../Dataset/encoded_kidney_data.csv --output Results
    ```
   
   
