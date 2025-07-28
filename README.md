@@ -25,7 +25,7 @@ pip install -r requirements.txt
 3. [Federated Averaging Implementation (FeatureCloud)](./fc-fedbaynet)
    - Each client (participant) learns network structure and computes local CPTs on its private data.
    - Local CPTs are sent by the clients to the server (coordinator).
-   - Server aggregates the CPTs to create a global model and global CPTs using **weighted averaging**, with weights being each client's dataset size.
+   - Server aggregates the CPTs to create a global model and global CPTs using **weighted averaging**, with weights being each client's normalized dataset size.
    - The server broadcasts the global model and CPTs to the clients.
   
    Steps to run the app using FeatureCloud:
