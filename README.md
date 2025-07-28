@@ -31,7 +31,7 @@ pip install -r requirements.txt
    Steps to run the app using FeatureCloud:
    ```
    cd fc-fedbaynet
-   featurecloud build app
+   featurecloud app build
    featurecloud controller start
    ```
    
