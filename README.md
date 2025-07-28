@@ -22,5 +22,20 @@ pip install -r requirements.txt
    cd "Centralized Learning"
    python main.py --data ../Dataset/encoded_kidney_data.csv --output Results
    ```
+3. Federated Averaging Implementation (FeatureCloud)
+   - Each client (participant) learns network structure and computes local CPTs on its private data.
+   - Local CPTs are sent by the clients to the server (coordinator).
+   - Server aggregates the CPTs to create a global model and global CPTs using **weighted averaging**, with weights being each client's dataset size.
+   - The server broadcasts the global model and CPTs to the clients.
   
-  
+   Steps to run the app using FeatureCloud:
+   ```
+   cd fc-fedbaynet
+   ```
+   ```
+   featurecloud build app
+   ```
+   ```
+   featurecloud controller start
+   ```
+   
