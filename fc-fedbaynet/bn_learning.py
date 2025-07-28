@@ -1,5 +1,4 @@
 import numpy as np
-import os
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Optional, Any
@@ -10,6 +9,7 @@ import json
 import matplotlib.pyplot as plt
 import networkx as nx
 import traceback
+import pickle
 
 class Client:
 
@@ -331,6 +331,21 @@ class Coordinator(Client):
         print(f"[COORDINATOR] Successfully aggregated {len(aggregated_cpts)} CPTs")
         return aggregated_cpts
     
+    def save_global_model(self, filename: str = "global_model.pkl") -> None:
+        """
+        Saves the global Bayesian network model as a pickle file.
+        """
+        if self.global_model is None:
+            print("No global model available to save.")
+            return
+        
+        try:
+            with open(filename, "wb") as f:
+                pickle.dump(self.global_model, f)
+            print(f"Global model saved to: {filename}")
+        except Exception as e:
+            print(f"Error saving global model to pickle: {str(e)}")
+    
     def create_global_network_from_cpts(self, aggregated_cpts: List[Dict[str, Any]]) -> Optional[DiscreteBayesianNetwork]:
         """Create a Bayesian network from aggregated CPTs"""
         try:
@@ -385,3 +400,5 @@ class Coordinator(Client):
             print(f"[COORDINATOR] Error creating global network: {str(e)}")
             traceback.print_exc()
             return None
+        
+    

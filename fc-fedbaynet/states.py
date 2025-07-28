@@ -5,7 +5,7 @@ import json
 from FeatureCloud.app.engine.app import AppState, Role, app_state, LogLevel, State
 from bn_learning import Client, Coordinator
 import shutil
-
+import base64
 
 @app_state('initial', Role.BOTH)
 class InitialState(AppState):
@@ -186,13 +186,23 @@ class AwaitCompletionState(AppState):
         
         if completion_data.get("status") == "completed":
             self.log("[CLIENT] Received completion signal from coordinator.")
-            if completion_data.get("global_network_saved"):
-                self.log("[CLIENT] Global network visualization was successfully saved by coordinator")
+
+            pkl_b64 = completion_data.get("global_model_pkl_b64")
+            if pkl_b64:
+                output_dir = self.load('OUTPUT_DIR')
+                pkl_path = os.path.join(output_dir, "global_network.pkl")
+
+                # Decode base64 and save the .pkl file
+                with open(pkl_path, "wb") as f:
+                    f.write(base64.b64decode(pkl_b64))
+                self.log(f"[CLIENT] Saved received global model to {pkl_path}")
+
             else:
-                self.log("[CLIENT] Warning: Global network visualization may not have been saved")
+                self.log("[CLIENT] Warning: No global model data received")
+
         else:
-            self.log("[CLIENT] Warning: Unexpected completion signal received", LogLevel.WARNING)
-        
+            self.log("[CLIENT] Warning: Unexpected completion signal received")
+
         return 'final'
 
 
@@ -242,6 +252,9 @@ class AggregationState(AppState):
                     save_path=global_network_image,
                     title_prefix="Global Federated Bayesian Network"
                 )
+                output_dir = self.load('OUTPUT_DIR')
+                pkl_path = os.path.join(output_dir, "global_network.pkl")
+                coordinator.save_global_model(pkl_path)
                 global_network_saved = True
                 self.log(f"[COORDINATOR] Saved global network visualization to {global_network_image}")
             except Exception as e:
@@ -265,14 +278,25 @@ class BroadcastResultsState(AppState):
     def run(self):
         self.log("[COORDINATOR] Broadcasting completion signal to all participants...")
         
-        # Send completion signal to all participants
         global_cpts = self.load('global_cpts')
         num_variables = len(global_cpts) if global_cpts else 0
-        
+        output_dir = self.load('OUTPUT_DIR')
+        pkl_path = os.path.join(output_dir, "global_network.pkl")
+
+        pkl_data_b64 = None
+        if os.path.exists(pkl_path):
+            with open(pkl_path, "rb") as f:
+                pkl_bytes = f.read()
+                pkl_data_b64 = base64.b64encode(pkl_bytes).decode('utf-8')  # Convert bytes to base64 string
+            self.log("[COORDINATOR] Global model .pkl file read and encoded for broadcast.")
+        else:
+            self.log("[COORDINATOR] Warning: global_network.pkl file not found to broadcast")
+
         completion_data = {
             "status": "completed",
             "global_network_saved": self.load('global_network_saved'),
-            "num_variables": num_variables
+            "num_variables": num_variables,
+            "global_model_pkl_b64": pkl_data_b64 
         }
         
         self.broadcast_data(completion_data)
