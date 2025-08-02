@@ -34,4 +34,8 @@ pip install -r requirements.txt
    featurecloud app build
    featurecloud controller start
    ```
+   After starting the controller, you can run the FedBayNet app using CLI as:
+   ```
+   featurecloud test start --app-image fc-fedbaynet_iter --client-dirs 'client1,client2,client3' --generic-dir 'generic' --download-results results
+   ```
    
