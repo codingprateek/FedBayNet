@@ -23,7 +23,7 @@ pip install -r requirements.txt
    python main.py --data ../Dataset/encoded_kidney_data.csv --output Results
    ```
 3. [Federated Averaging Implementation (FeatureCloud)](./fc-fedbaynet)
-   - Starting from the initial state, each participant, including the coordinator, reads its dataset and a common configuration file for parameters and paths.
+   - **Read Input State**: Starting from the initial state, each participant, including the coordinator, reads its private dataset and a common configuration file for parameters and paths.
    - **Broadcast State**: The coordinator initially broadcasts the expert knowledge-based network and then the tuned global network in subsequent iterations.
    - **Await Broadcast State**: The participants wait for network from the coordinator.
    - **Local Computation State**: All participants and the coordinator compute their respective CPTs based on their private data and the received network structure. The CPTs along with dataset size are sent to the coordinator.
