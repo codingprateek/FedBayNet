@@ -41,4 +41,9 @@ pip install -r requirements.txt
    --generic-dir 'generic' \
    --download-results results
    ```
-   
+<p align="center">
+<img width="806" height="648" alt="States Flow Diagram" src="https://github.com/user-attachments/assets/5dbf302a-b09f-468c-bc7a-0990bcd06b4c" />
+  <br>
+  <em>Figure 1: FedBayNet States and Transitions</em>
+</p>
+
