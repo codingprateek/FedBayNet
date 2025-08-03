@@ -23,11 +23,23 @@ pip install -r requirements.txt
    python main.py --data ../Dataset/encoded_kidney_data.csv --output Results
    ```
 3. [Federated Averaging Implementation (FeatureCloud)](./fc-fedbaynet)
-   - Each client (participant) learns network structure and computes local CPTs on its private data.
-   - Local CPTs are sent by the clients to the server (coordinator).
-   - Server aggregates the CPTs to create a global model and global CPTs using **weighted averaging**, with weights being the size of local dataset normalized by the total data across all clients.
-   - The server broadcasts the global model and CPTs to the clients.
-  
+   - Starting from the initial state, each participant, including the coordinator, reads its dataset and a common configuration file for parameters and paths.
+   - **Broadcast State**: The coordinator initially broadcasts the expert knowledge-based network and then the tuned global network in subsequent iterations.
+   - **Await Broadcast State**: The participants wait for network from the coordinator.
+   - **Local Computation State**: All participants and the coordinator compute their respective CPTs based on their private data and the received network structure. The CPTs along with dataset size are sent to the coordinator.
+   - **Aggregation State**: The coordinator receives the CPTs and aggregates them, weighted by the associated participant's dataset size. The aggregated CPTs are used to create a new global network structure. This network is then
+     compared with the expert-knowledge based network.
+   - **Await Aggregation State**: The participants wait for the aggregation results (updated global network) from the coordinator.
+   - **Final State**: All participants and the coordinator receive the updated global CPTs and network structure.
+
+   <p align="center">
+   <img width="400" height="300" alt="States Flow Diagram" src="https://github.com/user-attachments/assets/5dbf302a-b09f-468c-bc7a-0990bcd06b4c" />
+     <br>
+     <em>Figure 1: FedBayNet States and Transitions</em>
+   </p>
+
+4. FedProx Implementation
+   
    Steps to run the app using FeatureCloud:
    ```
    cd fc-fedbaynet
@@ -41,9 +53,3 @@ pip install -r requirements.txt
    --generic-dir 'generic' \
    --download-results results
    ```
-<p align="center">
-<img width="400" height="300" alt="States Flow Diagram" src="https://github.com/user-attachments/assets/5dbf302a-b09f-468c-bc7a-0990bcd06b4c" />
-  <br>
-  <em>Figure 1: FedBayNet States and Transitions</em>
-</p>
-
