@@ -1,0 +1,10 @@
+fc_fedbaynet:
+  input:
+    dataset_loc: "client.csv"
+    bwlists_loc: "expert_knowledge.json"
+    label: "class"
+  split:
+    mode: "file"
+    dir: "."        
+  max_iterations: 5
+  convergence_threshold: 0.01
