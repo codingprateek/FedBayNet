@@ -1,0 +1,383 @@
+import os
+import yaml
+import numpy as np
+import pandas as pd
+import json
+from FeatureCloud.app.engine.app import AppState, Role, app_state, State
+import numpy as np
+import traceback
+from algorithm import Client, Coordinator
+import matplotlib.pyplot as plt
+import logging
+logging.getLogger("pgmpy").setLevel(logging.WARNING)
+
+# FedBayNet States
+INITIAL = 'initial'
+READ_INPUT = 'read input'
+LOCAL_COMPUTATION = 'local computation'
+AGGREGATION = 'aggregation'
+AWAIT_AGGREGATION = 'await aggregation'
+FINAL = 'final'
+TERMINAL = 'terminal'
+
+
+@app_state(INITIAL, Role.BOTH)
+class InitialState(AppState):
+    """
+    Initializes FedBayNet.
+    """
+    def register(self):
+        self.register_transition(READ_INPUT, Role.BOTH)
+
+    def run(self):
+        self.log("[CLIENT] Starting FedBayNet...")
+        self.log(f"[CLIENT] Node ID: {self.id}, Coordinator: {self.is_coordinator}")
+        self.log("Initial to Read Input")
+        return READ_INPUT
+
+
+@app_state(READ_INPUT, Role.BOTH)
+class ReadInputState(AppState):
+    """
+    Reads client datasets, blacklists and whitelists, along with a common configuration file.
+    """
+    def register(self):
+        self.register_transition(LOCAL_COMPUTATION, Role.BOTH)
+        self.register_transition(READ_INPUT, Role.BOTH)
+
+    def run(self):
+        try:
+            self.log("[CLIENT] Reading dataset and configuration...")
+            self.read_config()
+
+            splits = self.load('splits')
+            roles = self.load('roles')
+
+            for split_path in splits.keys():
+                roles[split_path] = Coordinator() if self.is_coordinator else Client()
+
+                dataset_loc = self.load('dataset')
+                dataset_path = os.path.join(split_path, dataset_loc)
+                if not os.path.exists(dataset_path):
+                    raise FileNotFoundError(f"Dataset File not found at location: {dataset_path}")
+                
+                dataset = pd.read_csv(dataset_path)
+                splits[split_path] = dataset
+                self.log(f"[CLIENT] Loaded dataset from {split_path}: {dataset.shape[0]} records and {dataset.shape[1]} variables")
+
+                bwlists_loc = self.load('bwlists')
+                bwlists_path = os.path.join(split_path, bwlists_loc)
+                if not os.path.exists(bwlists_path):
+                    raise FileNotFoundError(f"Dataset File not found at location: {bwlists_path}")
+                
+                with open(bwlists_path) as f:
+                    expknowledge = json.load(f)
+
+                blacklist = [tuple(edge) for edge in expknowledge["blacklist"]]
+                whitelist = [tuple(edge) for edge in expknowledge["whitelist"]]
+
+            self.store('roles', roles)
+            self.store('splits', splits)
+
+            client_split_path = None
+            client_id_str = str(self.id).lower()
+
+            for split_path in splits.keys():
+                split_dirname = os.path.basename(split_path).lower()
+                self.log(f"[CLIENT] Comparing Client ID '{client_id_str}' with split directory '{split_dirname}'")
+                if client_id_str in split_dirname: # FLAG: change it later for client folders
+                    client_split_path = split_path
+                    break 
+
+            if client_split_path is None:
+                if len(splits) == 1:
+                    client_split_path = next(iter(splits.keys()))
+                    self.log(f"[CLIENT] Using split directory: {client_split_path}")
+                else:
+                    raise RuntimeError(f"[CLIENT {self.id}]: No matching split directory found for this client.")
+                
+            self.store('dataset', splits[client_split_path])
+            self.store('blacklist', blacklist)
+            self.store('whitelist', whitelist)
+            self.store('client_split_path', client_split_path)
+
+            self.log(f"BLACKLIST: {blacklist}")
+            self.log(f"WHITELIST: {whitelist}")
+            client = roles[client_split_path]
+            self.store('client_instance', client)
+            self.store('iteration', 1)
+            self.store('accuracy_history', [])
+
+            return LOCAL_COMPUTATION
+        
+        except Exception as e:
+            self.log(f"[CLIENT] Error reading config: {str(e)}")
+            self.update(message = "no config file or missing fields", state = State.ERROR)
+            traceback.print_exc()
+            return READ_INPUT
+
+    def read_config(self):
+        self.log("Read Input to Local Computation")
+
+        input_dir = "/mnt/input"
+        output_dir = "/mnt/output"
+
+        self.store('input_dir', input_dir)
+        self.store('output_dir', output_dir)
+
+        config_path = os.path.join(input_dir, 'config.yml')
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Config file not found: {config_path}")
+        
+        with open(config_path) as f:
+            config_file = yaml.load(f, Loader=yaml.FullLoader)
+
+        config = config_file['fc_fedbaynet']
+        self.store('dataset', config['input']['dataset_loc'])
+        self.store('bwlists', config['input']['bwlists_loc'])
+        self.store('split_mode', config['split']['mode'])
+        self.store('split_dir', config['split']['dir']) 
+        self.store('convergence_threshold', config['convergence_threshold'])  
+        self.store('max_iterations', config['max_iterations'])
+        
+        splits = {}
+        if self.load('split_mode') == "directory":
+            split_base_dir = os.path.join(input_dir, self.load('split_dir'))
+            if os.path.exists(split_base_dir):
+                splits = {f.path: None for f in os.scandir(split_base_dir) if f.is_dir()}
+            else:
+                splits = {input_dir: None}
+        else:
+            splits = {input_dir: None}
+
+        roles = {}
+        for split_path in splits.keys():
+            output_path = split_path.replace("/input/", "/output/")
+            os.makedirs(output_path, exist_ok=True)
+
+        self.log("[CLIENT] Configuration Loaded Successfully")
+
+        self.store('roles', roles)
+        self.store('splits', splits)
+
+
+@app_state(LOCAL_COMPUTATION, Role.BOTH)
+class LocalComputationState(AppState):
+    """
+    Accessible by clients and coordinator as a client for:
+    - creating client model based on dataset
+    - fusing local model with global network to incorportate expert and dataset knowledge to compute CPTs
+    - evaluating fused model on local dataset using K-fold Cross Validation
+
+    The client payload sent to the coordinator after this step contains:
+    - [Iteration 1] client's blacklist, whitelist and iteration value 
+    - [Iteration > 1] client's CPTs, dataset size and iteration value
+    """
+    def register(self):
+        self.register_transition(AGGREGATION, Role.COORDINATOR)
+        self.register_transition(AWAIT_AGGREGATION, Role.PARTICIPANT)
+
+    def run(self):
+        output_dir = "/mnt/output"
+        iteration = self.load('iteration')
+        max_iterations = self.load('max_iterations')
+        dataset = self.load('dataset')
+        blacklist = self.load('blacklist')
+        whitelist = self.load('whitelist')
+        
+        participant = Coordinator() if self.is_coordinator else Client()
+
+        if iteration == 1:
+            self.log(f"[CLIENT] Initializing FedBayNet...")
+            self.log(f"[CLIENT] Sharing expert knowledge with the coordinator.")
+            client_payload = {
+                "blacklist":  blacklist,
+                "whitelist": whitelist,
+                "iteration": iteration
+            }
+        else:
+            if self.is_coordinator:
+                global_network = self.load("global_network")
+                aggregated_cpts = self.load('aggregated_cpts')
+            else:
+                global_network = self.load("global_network_client")
+                aggregated_cpts = self.load("aggregated_cpts_client")
+            
+            local_network = participant.create_client_model(dataset)
+            client_network = participant.fuse_bayesian_networks(global_network, local_network, dataset)
+
+            local_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
+            client_cpts = participant.fedprox_local_update(local_cpts, aggregated_cpts, dataset, mu=1)
+
+            if iteration >= max_iterations:
+                results_path = os.path.join(output_dir, "results.csv")
+                avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=results_path)
+                self.log(f"[CLIENT] Final results saved to {results_path}")
+            else:
+                avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=None)
+                
+            self.log(f"[CLIENT] Average Accuracy for Global Network {iteration}: {avg_acc}")
+            
+            accuracy_history = self.load('accuracy_history')
+            accuracy_history.append(avg_acc)
+            self.store("accuracy_history", accuracy_history)
+                    
+            client_payload = {
+                "client_cpts": client_cpts,
+                "dataset_size": dataset.shape[0],
+                "iteration": iteration
+            }
+
+            visualization_path = os.path.join(output_dir, f"global_network_iter{iteration-1}.png")
+            participant.visualize_network(global_network, save_path=visualization_path)
+            local_visualization_path = os.path.join(output_dir, f"local_network_iter{iteration-1}.png")
+            participant.visualize_network(client_network, save_path=local_visualization_path)
+
+        
+        self.send_data_to_coordinator(client_payload)
+
+        if self.is_coordinator:
+            return AGGREGATION
+        else:
+            return AWAIT_AGGREGATION
+        
+
+@app_state(AGGREGATION, Role.COORDINATOR)
+class AggregateState(AppState):
+    """
+    Accessible only by the coordinator(server) to:
+    - build initial global network using expert knowledge sent by clients, i.e., respective blacklists and whitelists.
+    - aggregate client CPTs using weighted averaging
+    - build a Bayesian network using the aggregated CPTs
+
+    The coordinator payload broadcasted to clients after this state contains:
+    1. Global network 
+    2. Aggregated CPTs
+    3. Iteration value
+    4. A message to indicate termination of learning process to the clients
+    """
+    def register(self):
+        self.register_transition(LOCAL_COMPUTATION, Role.COORDINATOR)
+        self.register_transition(FINAL, Role.COORDINATOR)
+
+    def convert_np_arrays(self, obj):
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif isinstance(obj, dict):
+                return {k: self.convert_np_arrays(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [self.convert_np_arrays(i) for i in obj]
+            else:
+                return obj
+                
+    def run(self):
+        output_dir = "/mnt/output"
+        iteration = self.load('iteration')
+        max_iterations = self.load('max_iterations')
+        num_folds = self.load('num_folds')  
+        self.log(f"[COORDINATOR] Aggregating iteration {iteration}")
+
+        coordinator = Coordinator()
+        client_payload = self.gather_data()
+        prev_aggregated_cpts = self.load('aggregated_cpts')
+
+        if iteration == 1:
+            self.log("[COORDINATOR] Building network structure based on expert knowledge...")
+            blacklists = [payload["blacklist"] for payload in client_payload]
+            whitelists = [payload["whitelist"] for payload in client_payload]
+            aggregated_cpts = []
+            global_network = coordinator.create_constrained_global_network(whitelists, blacklists)
+        else:
+            self.log("[COORDINATOR] Aggregating CPTs and building global network structure...")
+            clients_cpts = [payload["client_cpts"] for payload in client_payload]
+            dataset_sizes = [payload["dataset_size"] for payload in client_payload]
+            aggregated_cpts = coordinator.learn_network_structure(clients_cpts, dataset_sizes)
+            global_network = coordinator.build_model_from_cpts(aggregated_cpts)
+
+        self.store("aggregated_cpts", aggregated_cpts)
+        self.store("global_network", global_network)
+
+        os.makedirs(output_dir, exist_ok=True)
+        serialized_cpts = self.convert_np_arrays(aggregated_cpts)
+        cpts_path = os.path.join(output_dir, f"aggregated_cpts_{iteration}.json")
+        with open(cpts_path, "w") as json_file:
+            json.dump(serialized_cpts, json_file, indent=4)
+
+        self.log(f"[DEBUG] Saved CPTs to: {cpts_path}")
+        self.log(f"[DEBUG] Aggregated CPT count: {len(aggregated_cpts)}")
+        self.log(f"[DEBUG] Output dir contents: {os.listdir(output_dir)}")
+
+        # Stopping condition
+        if iteration >= int(max_iterations):
+            self.broadcast_data({'message': 'done'})
+            self.log(f"[COORDINATOR] Completed after {iteration} iterations (max iterations: {num_folds})")
+            return FINAL
+
+        iteration += 1
+        self.store('iteration', iteration)
+        coordinator_payload = {
+            "global_network": global_network,
+            "aggregated_cpts": serialized_cpts,
+            "iteration": iteration,
+            "message": "continue"
+        }
+        self.broadcast_data(coordinator_payload)
+        self.log(f"[COORDINATOR] Broadcasting for iteration {iteration} (max iterations: {max_iterations})")
+        return LOCAL_COMPUTATION
+
+
+
+@app_state(AWAIT_AGGREGATION, Role.PARTICIPANT)
+class AwaitAggregationState(AppState):
+    """
+    Clients transition into this state to wait for aggregation results from the coordinator.
+    """
+    def register(self):
+        self.register_transition(LOCAL_COMPUTATION, Role.PARTICIPANT)
+        self.register_transition(FINAL, Role.PARTICIPANT)
+
+    def run(self):
+        coordinator_payload = self.await_data()
+        message = coordinator_payload.get('message')
+        global_network_client = coordinator_payload.get("global_network")
+        self.store("global_network_client", global_network_client)
+        aggregated_cpts_client = coordinator_payload.get("aggregated_cpts")
+        self.store("aggregated_cpts_client", aggregated_cpts_client)
+        
+        if message == 'done':
+            self.log(f"[CLIENT] Received completion signal")
+            return FINAL
+        
+        new_iteration = coordinator_payload.get('iteration')
+        if new_iteration is not None:
+            self.store('iteration', new_iteration)
+            self.log(f"[CLIENT] Updated to iteration {new_iteration}")
+
+        return LOCAL_COMPUTATION
+
+    
+@app_state(FINAL, Role.BOTH)
+class FinalState(AppState):
+    def register(self):
+        self.register_transition(TERMINAL, Role.BOTH)
+
+    def run(self):
+        self.log("Learning Complete")
+
+        accs = self.load("accuracy_history")
+        plt.figure(figsize=(8, 5))
+        plt.plot(range(1, len(accs) + 1), accs, marker='o', linestyle='-')
+        plt.title("Average Accuracy Across Federated Iterations")
+        plt.xlabel("Iteration")
+        plt.ylabel("Average Accuracy")
+        plt.xticks(np.arange(0, 10, 1))
+        plt.grid(True)
+        
+        output_dir = "/mnt/output"
+        acc_plot_path = os.path.join(output_dir, "accuracy_trend.png")
+        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        self.log(f"[FINAL] Accuracy trend saved to {acc_plot_path}")
+
+        return TERMINAL
