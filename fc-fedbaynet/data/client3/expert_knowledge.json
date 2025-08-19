@@ -1,35 +1,34 @@
 {
   "whitelist": [
-    ["stage", "class"],
-    ["hemo", "class"],
-    ["bp_limit", "class"],
-    ["pcv", "class"],
-    ["dm", "class"],
-    ["al", "class"],
-    ["sg", "class"],
-    ["grf", "class"],
-    ["dm", "su"],
-    ["su", "cad"],
-    ["pcc", "htn"],
-    ["htn", "class"],
-    ["htn", "pc"],
-    ["pc", "appet"],
-    ["appet", "ba"]
-  ],
-  "blacklist": [
     ["bp_diastolic", "rbc"],
     ["bp_limit", "bp_diastolic"],
-    ["pcc", "pe"],
-    ["sc", "ane"],
-    ["ane", "pcc"],
-    ["ane", "bu"],
     ["class", "stage"],
     ["class", "hemo"],
     ["class", "bp_limit"],
     ["class", "pcv"],
     ["class", "dm"],
     ["class", "al"],
+    ["pcc", "htn"],
+    ["pcc", "pe"],
+    ["htn", "class"],
+    ["htn", "pc"],
+    ["sc", "ane"],
+    ["ane", "pcc"],
+    ["ane", "bu"],
     ["class", "sg"],
-    ["class", "grf"]
+    ["class", "grf"],
+    ["dm", "su"],
+    ["su", "cad"],
+    ["pc", "appet"],
+    ["appet", "ba"]
+    ],
+
+  "blacklist": [
+    ["sg", "class"],
+    ["grf", "class"],
+    ["su", "dm"],
+    ["cad", "su"],
+    ["appet", "pc"],
+    ["ba", "appet"]
   ]
 }

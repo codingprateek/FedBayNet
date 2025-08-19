@@ -8,3 +8,4 @@ fc_fedbaynet:
     dir: "."        
   max_iterations: 5
   convergence_threshold: 0.01
+  num_folds: 5
