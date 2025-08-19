@@ -1,0 +1,40 @@
+{
+    "whitelist": [
+    ["bp_limit", "bp_diastolic"],
+    ["sg", "class"],
+    ["class", "stage"],
+    ["class", "hemo"],
+    ["class", "htn"],
+    ["class", "rbcc"],
+    ["class", "pcv"],
+    ["class", "al"],
+    ["class", "bp_limit"],
+    ["class", "appet"],
+    ["stage", "grf"],
+    ["stage", "sc"],
+    ["stage", "ane"],
+    ["htn", "dm"],
+    ["htn", "bu"],
+    ["dm", "bgr"],
+    ["dm", "su"],
+    ["class", "pe"],
+    ["class", "cad"],
+    ["class", "sod"],
+    ["class", "dm"],
+    ["al", "pc"],
+    ["pc", "pcc"],
+    ["pc", "ba"],
+    ["pc", "rbc"]
+    ],
+
+    "blacklist": [
+      ["pe", "class"],
+      ["cad", "class"],
+      ["sod", "class"],
+      ["dm", "class"],
+      ["pc", "al"],
+      ["pcc", "pc"],
+      ["ba", "pc"],
+      ["rbc", "pc"]
+    ]
+}
