@@ -1,21 +1,27 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-import warnings
-warnings.filterwarnings('ignore')
-from sklearn.model_selection import KFold
+
 from typing import Optional, Any, List, Dict, Tuple, Set
+from collections import defaultdict
+import itertools
+
 from pgmpy.models import DiscreteBayesianNetwork
-from pgmpy.estimators import HillClimbSearch
-from pgmpy.estimators import BIC
-from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.estimators import HillClimbSearch, TreeSearch, PC, GES, BIC, MaximumLikelihoodEstimator
 from pgmpy.factors.discrete.CPD import TabularCPD
 from pgmpy.inference import VariableElimination
-from sklearn.model_selection import KFold
 import networkx as nx
+
 import torch
 import torch.nn.functional as F
-from collections import defaultdict
-import pandas as pd
+from sklearn.model_selection import KFold
+
+import warnings
+import logging
+warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore', category=UserWarning, module='pgmpy')
+logging.getLogger("pgmpy").setLevel(logging.ERROR)
+logging.getLogger("pgmpy.models").setLevel(logging.ERROR)
 
 
 class Client:
@@ -40,100 +46,192 @@ class Client:
         self.dataset: Optional[pd.DataFrame] = None
         self.client_size: int = 0
 
-    def visualize_network(self, 
-                         structure: Optional[DiscreteBayesianNetwork] = None,
-                         target_node: str = 'class',
-                         target_color: str = '#9f0000',
-                         node_color: str = '#22666F',
-                         target_size: int = 1200,
-                         node_size: int = 800,
-                         seed: int = 23,
-                         figsize: Tuple[int, int] = (10, 8),
-                         save_path: Optional[str] = None,
-                         title_prefix: str = "Bayesian Network") -> None:
+    def visualize_network(self,
+                        structure: Optional[DiscreteBayesianNetwork] = None,
+                        target_node: str = 'class',
+                        target_color: str = '#9f0000',
+                        node_color: str = '#22666F',
+                        target_size: int = 1200,
+                        node_size: int = 800,
+                        seed: int = 23,
+                        figsize: Tuple[int, int] = (10, 8),
+                        save_path: Optional[str] = None,
+                        title_prefix: str = "Bayesian Network") -> None:
         """
-        Visualize a Bayesian network structure using NetworkX and Matplotlib.
+        Visualize a (directed) Bayesian network structure using NetworkX and Matplotlib.
+        """
+        graph = nx.DiGraph()
         
-        Args:
-            structure: The Bayesian network structure to visualize
-            target_node: Name of the target node to highlight
-            target_color: Color for the target node
-            node_color: Color for regular nodes
-            target_size: Size of the target node
-            node_size: Size of regular nodes
-            seed: Random seed for layout positioning
-            figsize: Figure size as (width, height)
-            save_path: Optional path to save the visualization
-            title_prefix: Prefix for the plot title
-            
-        Returns:
-            None. Displays the network visualization.
-        """
-        graph = nx.Graph()
-        if structure is not None and len(structure.edges()) > 0:
+        if structure is not None:
             graph.add_edges_from(structure.edges())
         
-        if len(graph.nodes()) == 0:
+        if graph.number_of_nodes() == 0:
             print("No nodes available for visualization.")
             return 
         
         _, ax = plt.subplots(figsize=figsize)
         
-        pos = nx.spring_layout(graph, seed=seed)
-
-        node_colors = [target_color if node == target_node else node_color
-                      for node in graph.nodes()]
-        node_sizes = [target_size if node == target_node else node_size
-                     for node in graph.nodes()]
-
-        nx.draw(
-            graph,
-            pos,
-            with_labels=False,
-            node_color=node_colors,
-            node_size=node_sizes,
+        pos = nx.spring_layout(graph, seed=seed, k=2, iterations=50)
+        
+        node_colors = [target_color if n == target_node else node_color for n in graph.nodes()]
+        node_sizes  = [target_size if n == target_node else node_size  for n in graph.nodes()]
+        
+        nx.draw_networkx_nodes(graph, pos, node_color=node_colors, node_size=node_sizes, ax=ax)
+        nx.draw_networkx_labels(graph, pos,
+                            labels={n: n for n in graph.nodes()},
+                            font_color='black', font_weight='bold', ax=ax)
+        
+        nx.draw_networkx_edges(
+            graph, pos,
+            arrows=True,                     
+            arrowstyle='-|>',               
+            arrowsize=20,                   
             edge_color='gray',
-            alpha=0.8,
-            ax=ax 
+            width=1.5,
+            ax=ax
         )
-
-        nx.draw_networkx_labels(
-            graph,
-            pos,
-            labels={node: node for node in graph.nodes()},
-            font_color='black',
-            font_weight='bold',
-            ax=ax  
-        )
-
-        title = f"{title_prefix} - {len(graph.nodes())} nodes, {len(graph.edges())} edges"
+        
+        title = f"{title_prefix} - {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges"
         ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
         ax.axis('off')
-        
         plt.tight_layout()
-
+        
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             print(f"Network visualization saved to: {save_path}")
-
+        
         plt.show()
 
-
     def create_client_model(self, dataset: pd.DataFrame) -> DiscreteBayesianNetwork:
-        """
-        Create a Bayesian network model from dataset using Hill Climbing search.
+        df = dataset.dropna().reset_index(drop=True).copy()
+        for c in df.columns:
+            if not pd.api.types.is_categorical_dtype(df[c]):
+                df[c] = df[c].astype("category")
         
-        Args:
-            dataset: Input dataset as a pandas DataFrame
-            
-        Returns:
-            A fitted DiscreteBayesianNetwork model
-        """
-        hc = HillClimbSearch(dataset)
-        structure = hc.estimate(scoring_method='bic-d')
-        model = structure.fit(dataset, estimator=MaximumLikelihoodEstimator)
-        return model
+        candidates = {}
+        
+        try:
+            pc = PC(df)
+            candidates["pc"] = pc.estimate(variant="stable", ci_test="chi_square", return_type="dag")
+            print("PC algorithm completed successfully")
+        except Exception as e:
+            print(f"PC algorithm failed: {e}")
+            pass
+        
+        try:
+            hc = HillClimbSearch(df)
+            candidates["hill_climb"] = hc.estimate(scoring_method='bic-d')
+            print("Hill Climbing algorithm completed successfully")
+        except Exception as e:
+            print(f"Hill Climbing algorithm failed: {e}")
+            pass
+        
+        try:
+            hc_tabu = HillClimbSearch(df)
+            candidates["tabu"] = hc_tabu.estimate(scoring_method='bic-d', tabu_length=100)
+            print("Tabu Search algorithm completed successfully")
+        except Exception as e:
+            print(f"Tabu Search algorithm failed: {e}")
+            pass
+        
+        try:
+            tree = TreeSearch(df)
+            candidates["chow_liu"] = tree.estimate(estimator_type="chow-liu")
+            print("Chow-Liu Tree algorithm completed successfully")
+        except Exception as e:
+            print(f"Chow-Liu Tree algorithm failed: {e}")
+            pass
+        
+        try:
+            if 'class' in df.columns:
+                tree_tan = TreeSearch(df)
+                candidates["tan"] = tree_tan.estimate(estimator_type="tan", class_node="class")
+                print("TAN (Tree Augmented Naive Bayes) algorithm completed successfully")
+        except Exception as e:
+            print(f"TAN algorithm failed: {e}")
+            pass
 
+        try:
+            ges = GES(df)
+            candidates["ges"] = ges.estimate(scoring_method='bic-d')
+            print("GES (Greedy Equivalence Search) algorithm completed successfully")
+        except Exception as e:
+            print(f"GES algorithm failed: {e}")
+            pass
+        
+        try:
+            if df.shape[1] <= 8:
+                from pgmpy.estimators import ExhaustiveSearch
+                exhaustive = ExhaustiveSearch(df, scoring_method=BIC(df))
+                candidates["exhaustive"] = exhaustive.estimate()
+                print("Exhaustive Search algorithm completed successfully")
+            else:
+                print("Exhaustive Search skipped: too many variables (>8)")
+        except Exception as e:
+            print(f"Exhaustive Search algorithm failed: {e}")
+            pass
+        
+        # Remove duplicate structures
+        unique_structures = {}
+        for name, structure in candidates.items():
+            if nx.is_directed_acyclic_graph(structure):
+                edge_key = frozenset(structure.edges())
+                if edge_key not in unique_structures:
+                    unique_structures[edge_key] = (name, structure)
+                else:
+                    print(f"{name} produced duplicate structure (same as {unique_structures[edge_key][0]})")
+        
+        print(f"\nUnique valid structures found: {len(unique_structures)}")
+        
+        if not unique_structures:
+            print("No valid structures found - creating empty Bayesian Network")
+            empty_bn = DiscreteBayesianNetwork()
+            empty_bn.add_nodes_from(df.columns)
+            return empty_bn.fit(df, estimator=MaximumLikelihoodEstimator)
+        
+        # Evaluate all unique structures using BIC
+        bic_scorer = BIC(df)
+        best_score = float('-inf')
+        best_structure = None
+        best_algorithm = None
+        
+        print("\nEvaluating structures with BIC scoring:")
+        print("-" * 50)
+        
+        for name, structure in unique_structures.values():
+            try:
+                bn = DiscreteBayesianNetwork()
+                bn.add_nodes_from(structure.nodes())
+                bn.add_edges_from(structure.edges())
+                score = bic_scorer.score(bn)
+                
+                print(f"{name:15s}: BIC = {score:8.2f} | Edges = {len(structure.edges()):2d} | Nodes = {len(structure.nodes()):2d}")
+                
+                if score > best_score:
+                    best_score = score
+                    best_structure = bn
+                    best_algorithm = name
+            except Exception as e:
+                print(f"{name:15s}: FAILED - {e}")
+                continue
+        
+        print("-" * 50)
+        
+        if best_structure is None:
+            print("⚠ No structure could be evaluated - creating empty Bayesian Network")
+            empty_bn = DiscreteBayesianNetwork()
+            empty_bn.add_nodes_from(df.columns)
+            return empty_bn.fit(df, estimator=MaximumLikelihoodEstimator)
+        
+        print(f"BEST ALGORITHM: {best_algorithm.upper()}")
+        print(f"Best BIC Score: {best_score:.2f}")
+        print(f"Network Structure: {len(best_structure.nodes())} nodes, {len(best_structure.edges())} edges")
+        
+        if len(best_structure.edges()) > 0:
+            print(f"   Edges: {list(best_structure.edges())}")
+        
+        best_model = best_structure.fit(df, estimator=MaximumLikelihoodEstimator)
+        return best_model
 
     def compute_local_cpts_from_structure_and_data(self, 
                                                   structure: DiscreteBayesianNetwork, 
@@ -169,7 +267,7 @@ class Client:
     def fedprox_local_update(self, client_cpts: List[Dict[str, Any]],
                      global_cpts: List[Dict[str, Any]],
                      data: pd.DataFrame,
-                     mu: float = 1.0,  
+                     mu: float = 0.9,  
                      lr: float = 0.1, 
                      epochs: int = 50) -> List[Dict[str, Any]]:  
         """
@@ -343,7 +441,7 @@ class Client:
             return 0.0
 
 
-    def fuse_cpds(self, expert_cpd, data_cpd, expert_weight=0.8):
+    def fuse_cpds(self, expert_cpd, data_cpd, expert_weight=0.6):
         try:
             expert_values = expert_cpd.get_values()
             data_values = data_cpd.get_values()
@@ -533,7 +631,6 @@ class Client:
         data['predicted_class'] = data['predicted_class'].astype(int)
         data['prediction_confidence'] = data['prediction_confidence'].astype(float)
 
-        # Only save CSV if filename is provided
         if csv_filename is not None:
             data.to_csv(csv_filename, index=False)
             print(f"CSV saved as '{csv_filename}' with predicted class and confidence.")
@@ -679,555 +776,500 @@ class Coordinator(Client):
                 model.add_node(variable)
 
         return model
+    
+    def aggregate_cpts(self, clients_cpts: List[List[Dict[str, Any]]], dataset_sizes: List[float]):
+        if len(clients_cpts) != len(dataset_sizes):
+            raise ValueError("Number of clients and dataset_sizes must match.")
+        
+        total = float(sum(dataset_sizes))
+        if total <= 0:
+            raise ValueError("Sum of dataset sizes must be > 0.")
+        weights = [s / total for s in dataset_sizes]
 
+        by_var: Dict[str, List[Tuple[int, Dict[str, Any]]]] = defaultdict(list)
+        for ci, cpt_list in enumerate(clients_cpts):
+            for cpd in cpt_list:
+                by_var[cpd['variable']].append((ci, cpd))
 
-    def aggregate_cpts(self, cpt_lists, weights):
-        """
-        Original CPT aggregation function (preserved as-is)
-        """
-        if len(cpt_lists) != len(weights):
-            raise ValueError("Number of CPT lists must match number of weights")
-        
-        for i, cpt_list in enumerate(cpt_lists):
-            if not isinstance(cpt_list, list):
-                raise TypeError(f"CPT list at index {i} is not a list: {type(cpt_list)}")
-            for j, cpt in enumerate(cpt_list):
-                if not isinstance(cpt, dict):
-                    raise TypeError(f"CPT at index {j} in list {i} is not a dict: {type(cpt)}")
-                required_keys = ['variable', 'variable_card', 'values', 'evidence', 'evidence_card', 'cardinality']
-                for key in required_keys:
-                    if key not in cpt:
-                        raise KeyError(f"CPT at index {j} in list {i} missing key: {key}")
+        aggregated = []
 
-        all_variables = set()
-        for cpt_list in cpt_lists:
-            for cpt in cpt_list:
-                all_variables.add(cpt['variable'])
-        all_variables = sorted(list(all_variables)) 
-        
-        aggregated_cpts = []
-        
-        for var in all_variables:
-            var_cpts = []
-            cpt_weights = []
-            for i, cpt_list in enumerate(cpt_lists):
-                cpt = next((c for c in cpt_list if c['variable'] == var), None)
-                if cpt is not None:
-                    var_cpts.append(cpt)
-                    cpt_weights.append(weights[i])
-            
-            if not var_cpts:
-                continue  
-            
-            evidence_sets = [set(cpt['evidence']) for cpt in var_cpts]
-            all_evidence = sorted(list(set.union(*evidence_sets)))  
-            
-            max_evidence_cards = []
-            for ev in all_evidence:
-                max_card = 1
-                for cpt in var_cpts:
-                    if ev in cpt['evidence']:
-                        idx = cpt['evidence'].index(ev)
-                        max_card = max(max_card, cpt['evidence_card'][idx])
-                max_evidence_cards.append(max_card)
-            
-            padded_values = []
-            for cpt, weight in zip(var_cpts, cpt_weights):
-                curr_shape = [cpt['variable_card']] + list(cpt['evidence_card'])
-                curr_evidence = cpt['evidence']
-                target_shape = [cpt['variable_card']] + max_evidence_cards
+        for var, entries in by_var.items():
+            groups = defaultdict(list)
+            for ci, cpd in entries:
+                groups[int(cpd['variable_card'])].append((ci, cpd))
+            best_var_card = max(groups.keys(), key=lambda k: sum(weights[ci] for ci, _ in groups[k]))
+            chosen = groups[best_var_card]
+            var_card = best_var_card
+
+            parent_to_cards: Dict[str, Dict[int, float]] = defaultdict(lambda: defaultdict(float))
+            for ci, cpd in chosen:
+                ev_raw = cpd.get('evidence')
+                ev = list(ev_raw) if ev_raw is not None else []
+                evc_raw = cpd.get('evidence_card')
+                evc = list(evc_raw) if evc_raw is not None else []
+                ev_map = dict(zip(ev, map(int, evc)))
                 
-                values = cpt['values']
-                if not isinstance(values, np.ndarray):
-                    values = np.array(values)
-                
-                if values.shape != tuple(curr_shape):
-                    values = np.reshape(values, curr_shape)
-                
-                if curr_evidence:
-                    expanded_values = values
+                for p, c in ev_map.items():
+                    parent_to_cards[p][int(c)] += weights[ci]
+
+            sup_parents = sorted(parent_to_cards.keys())
+            sup_parent_cards = {}
+            for p in sup_parents:
+                choices = parent_to_cards[p]
+                chosen_card = max(choices.keys(), key=lambda card: choices[card])
+                sup_parent_cards[p] = chosen_card
+            sup_parent_card_list = [sup_parent_cards[p] for p in sup_parents]
+
+            per_client = []
+            for ci, cpd in chosen:
+                ev_raw = cpd.get('evidence')
+                ev = list(ev_raw) if ev_raw is not None else []
+                evc_raw = cpd.get('evidence_card')
+                evc_list = list(map(int, list(evc_raw) if evc_raw is not None else []))
+
+                client_sel_supidx = [sup_parents.index(p) for p in ev]
+                varc = int(cpd['variable_card'])
+                values = cpd['values']
+
+                per_client.append((ci, values, varc, evc_list, client_sel_supidx))
+
+            table = {}
+            if sup_parent_card_list:
+                for idx_sup in itertools.product(*[range(c) for c in sup_parent_card_list]):
+                    acc = [0.0] * var_card
+                    wsum = 0.0
                     
-                    curr_to_target_map = []
-                    for i, ev in enumerate(all_evidence):
-                        if ev in curr_evidence:
-                            curr_idx = curr_evidence.index(ev)
-                            curr_to_target_map.append(curr_idx + 1) 
-                        else:
-                            curr_to_target_map.append(-1) 
+                    for (ci, values, varc, evc_list, client_sel_supidx) in per_client:
+                        subset = []
+                        out_of_range = False
+                        for k, sup_idx in enumerate(client_sel_supidx):
+                            sup_val = idx_sup[sup_idx]
+                            if sup_val >= evc_list[k]:
+                                out_of_range = True
+                                break
+                            subset.append(sup_val)
+                        if out_of_range:
+                            continue
+
+                        prob_vector = []
+                        try:
+                            for s in range(var_card):
+                                v = values[s]
+                                for idx in subset:
+                                    v = v[idx]
+                                prob_vector.append(float(v))
+                        except:
+                            if len(evc_list) == 0:
+                                if isinstance(values, (int, float)):
+                                    prob_vector = [float(values)] if var_card == 1 else [1.0/var_card] * var_card
+                                elif hasattr(values, '__len__') and len(values) == var_card:
+                                    prob_vector = [float(values[s]) for s in range(var_card)]
+                                else:
+                                    prob_vector = [1.0/var_card] * var_card
+                            else:
+                                values_array = np.array(values)
+                                if values_array.ndim == 2:
+                                    prod_evidence = 1
+                                    for ec in evc_list:
+                                        prod_evidence *= ec
+                                    strides = []
+                                    for i in range(len(evc_list)):
+                                        stride = 1
+                                        for j in range(i+1, len(evc_list)):
+                                            stride *= evc_list[j]
+                                        strides.append(stride)
+                                    col = sum(idx * stride for idx, stride in zip(subset, strides))
+                                    
+                                    if col >= values_array.shape[1]:
+                                        col = 0
+                                    
+                                    try:
+                                        prob_vector = [float(values_array[s, col]) for s in range(var_card)]
+                                    except:
+                                        prob_vector = [1.0/var_card] * var_card
+                                else:
+                                    prob_vector = [1.0/var_card] * var_card
+
+                        if len(prob_vector) != var_card:
+                            continue
+                            
+                        w = weights[ci]
+                        wsum += w
+                        for i in range(var_card):
+                            acc[i] += w * prob_vector[i]
+
+                    if wsum > 0:
+                        acc = [x / wsum for x in acc]
                     
-                    new_axes_order = [0]
-                    singleton_positions = []
+                    s = sum(acc)
+                    if s <= 0:
+                        normalized_acc = [1.0 / len(acc)] * len(acc) if acc else []
+                    else:
+                        normalized_acc = [x / s for x in acc]
                     
-                    for i, (ev, target_pos) in enumerate(zip(all_evidence, curr_to_target_map)):
-                        if target_pos != -1:
-                            new_axes_order.append(target_pos)
-                        else:
-                            singleton_positions.append(i + 1)
-                    
-                    if len(new_axes_order) > 1:
-                        expanded_values = np.transpose(expanded_values, new_axes_order)
-                    
-                    for pos in singleton_positions:
-                        expanded_values = np.expand_dims(expanded_values, axis=pos)
-                    
-                    final_values = np.zeros(target_shape, dtype=float)
-                    slices = [slice(0, cpt['variable_card'])]  
-                    for i, (ev, max_card) in enumerate(zip(all_evidence, max_evidence_cards)):
-                        if ev in curr_evidence:
-                            curr_idx = curr_evidence.index(ev)
-                            curr_card = cpt['evidence_card'][curr_idx]
-                            slices.append(slice(0, curr_card))
-                        else:
-                            slices.append(slice(0, 1))
-                    
-                    final_values[tuple(slices)] = expanded_values
-                    padded_values.append(final_values * weight)
-                    
-                else:
-                    expanded_values = values
-                    for _ in max_evidence_cards:
-                        expanded_values = expanded_values[..., np.newaxis]
-                    
-                    final_values = np.broadcast_to(expanded_values, target_shape)
-                    padded_values.append(final_values * weight)
-        
-            max_var_card = max(cpt['variable_card'] for cpt in var_cpts)
-            final_shape = [max_var_card] + max_evidence_cards
-            
-            final_padded_values = []
-            
-            for padded_val, weight in zip(padded_values, cpt_weights):
-                if padded_val.shape[0] < max_var_card:
-                    final_padded = np.zeros(final_shape, dtype=float)
-                    slices = [slice(0, padded_val.shape[0])] + [slice(0, s) for s in padded_val.shape[1:]]
-                    final_padded[tuple(slices)] = padded_val
-                    final_padded_values.append(final_padded)
-                else:
-                    final_padded_values.append(padded_val)
-            
-            total_weight = sum(cpt_weights)
-            if total_weight > 0:
-                aggregated_values = np.sum([val * weight for val, weight in zip(final_padded_values, cpt_weights)], axis=0) / total_weight
+                    table[idx_sup] = normalized_acc
             else:
-                aggregated_values = np.sum(final_padded_values, axis=0)
-            
-            values_reshaped = aggregated_values.reshape(max_var_card, -1)
-            
-            column_sums = values_reshaped.sum(axis=0)
-            zero_columns = column_sums == 0
-            values_normalized = values_reshaped.copy()
-            
-            if np.any(~zero_columns):
-                values_normalized[:, ~zero_columns] = values_reshaped[:, ~zero_columns] / column_sums[~zero_columns]
-            
-            if np.any(zero_columns):
-                values_normalized[:, zero_columns] = 1.0 / max_var_card
-            
-            final_aggregated_values = values_normalized.reshape(final_shape)
-            
-            new_cpt = {
+                table[tuple()] = [1.0/var_card] * var_card
+
+            if not sup_parent_card_list:
+                nested_values = [table[tuple()][s] for s in range(var_card)]
+            else:
+                nested_values = []
+                for s in range(var_card):
+                    def build_nested(dim: int, prefix: Tuple[int, ...]):
+                        if dim == len(sup_parent_card_list):
+                            return table[prefix][s]
+                        return [build_nested(dim+1, prefix + (i,)) for i in range(sup_parent_card_list[dim])]
+                    nested_values.append(build_nested(0, tuple()))
+
+            aggregated.append({
                 'variable': var,
-                'variable_card': max_var_card,
-                'values': final_aggregated_values,
-                'evidence': all_evidence,
-                'evidence_card': np.array(max_evidence_cards, dtype=int),
-                'cardinality': np.array([max_var_card] + max_evidence_cards, dtype=int)
-            }
-            aggregated_cpts.append(new_cpt)
-        
-        return aggregated_cpts
+                'variable_card': var_card,
+                'values': nested_values,
+                'evidence': sup_parents,
+                'evidence_card': sup_parent_card_list,
+                'cardinality': [var_card] + sup_parent_card_list,
+            })
 
+        aggregated.sort(key=lambda d: d['variable'])
+        return aggregated
 
-    def calculate_mutual_information(self, cpt, var1_idx, var2_idx, normalize=True):
+    def get_edge_support_from_clients(self, parent, child, cpt_lists, weights):
         """
-        Calculate mutual information between two variables in a CPT
+        Calculate weighted consensus for an edge across clients
+        """
+        total_weight = sum(weights)
+        supporting_weight = 0.0
+        
+        for i, cpts in enumerate(cpt_lists):
+            weight = weights[i]
+            
+            # Check if the client has parent -> child relationship
+            child_cpt = next((c for c in cpts if c['variable'] == child), None)
+            if child_cpt and parent in child_cpt.get('evidence', []):
+                supporting_weight += weight
+        
+        return supporting_weight / total_weight if total_weight > 0 else 0.0
+
+    def learn_parameters(self, cpt_lists, weights, max_changes=5, consensus_threshold=0.6):
+        """
+        Learn structure using client consensus with dependency strength analysis
         
         Args:
-            cpt: CPT dictionary
-            var1_idx: Index of first variable (0 for target variable, >0 for evidence variables)
-            var2_idx: Index of second variable
-            normalize: Whether to normalize by joint entropy
-        
-        Returns:
-            Mutual information value
+            cpt_lists: List of CPT lists from clients
+            weights: Client weights for consensus
+            max_changes: Maximum structural changes per iteration
+            consensus_threshold: Minimum consensus required for edge consideration
         """
-        values = cpt['values']
-        
-        if var1_idx == 0:  
-            axes_to_sum = list(range(1, len(values.shape)))
-            if var2_idx != 0:
-                axes_to_sum.remove(var2_idx)
-            p1 = np.sum(values, axis=tuple(axes_to_sum))
-        else:  
-            axes_to_sum = [0] + [i for i in range(1, len(values.shape)) if i != var1_idx]
-            if var2_idx in axes_to_sum:
-                axes_to_sum.remove(var2_idx)
-            p1 = np.sum(values, axis=tuple(axes_to_sum))
-        
-        if var2_idx == 0:  
-            axes_to_sum = list(range(1, len(values.shape)))
-            if var1_idx != 0 and var1_idx in axes_to_sum:
-                axes_to_sum.remove(var1_idx)
-            p2 = np.sum(values, axis=tuple(axes_to_sum))
-        else:  
-            axes_to_sum = [0] + [i for i in range(1, len(values.shape)) if i != var2_idx]
-            if var1_idx in axes_to_sum:
-                axes_to_sum.remove(var1_idx)
-            p2 = np.sum(values, axis=tuple(axes_to_sum))
-        
-        axes_to_sum = [i for i in range(len(values.shape)) if i not in [var1_idx, var2_idx]]
-        if axes_to_sum:
-            p_joint = np.sum(values, axis=tuple(axes_to_sum))
-        else:
-            p_joint = values
-        
-        # Calculate MI
-        mi = 0.0
-        for i in range(p1.shape[0] if len(p1.shape) > 0 else 1):
-            for j in range(p2.shape[0] if len(p2.shape) > 0 else 1):
-                if len(p1.shape) == 0:
-                    p1_val = p1
-                else:
-                    p1_val = p1[i] if i < len(p1) else 0
-                    
-                if len(p2.shape) == 0:
-                    p2_val = p2
-                else:
-                    p2_val = p2[j] if j < len(p2) else 0
-                
-                if len(p_joint.shape) == 0:
-                    p_joint_val = p_joint
-                elif len(p_joint.shape) == 1:
-                    p_joint_val = p_joint[i] if i < len(p_joint) else 0
-                else:
-                    p_joint_val = p_joint[i, j] if i < p_joint.shape[0] and j < p_joint.shape[1] else 0
-                
-                if p_joint_val > 0 and p1_val > 0 and p2_val > 0:
-                    mi += p_joint_val * np.log2(p_joint_val / (p1_val * p2_val))
-        
-        if normalize and mi > 0:
-            h_joint = -np.sum(p_joint * np.log2(p_joint + 1e-12))
-            if h_joint > 0:
-                mi = mi / h_joint
-        
-        return max(0, mi) 
-
-
-    def calculate_conditional_independence_score(self, cpt, var1, var2, conditioning_vars):
-        """
-        Calculate score for conditional independence test
-        Lower score indicates stronger conditional independence
-        """
-        try:
-            var1_idx = 0 if cpt['variable'] == var1 else (cpt['evidence'].index(var1) + 1 if var1 in cpt['evidence'] else None)
-            var2_idx = 0 if cpt['variable'] == var2 else (cpt['evidence'].index(var2) + 1 if var2 in cpt['evidence'] else None)
-            
-            if var1_idx is None or var2_idx is None:
-                return float('inf') 
-            
-            mi = self.calculate_mutual_information(cpt, var1_idx, var2_idx, normalize=True)
-            
-            # Penalize based on number of conditioning variables
-            complexity_penalty = 0.01 * len(conditioning_vars)
-            
-            return mi + complexity_penalty
-            
-        except Exception:
-            return float('inf')
-
-
-    def learn_network_structure(self, cpt_lists, weights, edge_threshold=0.05, remove_threshold=0.01):
-        """
-        Learn network structure by aggregating CPTs and applying structure learning
-        
-        Args:
-            cpt_lists: List of CPT lists to aggregate
-            weights: Weights for aggregation
-            edge_threshold: Threshold for adding new edges (higher MI = add edge)
-            remove_threshold: Threshold for removing edges (lower CI score = remove edge)
-        
-        Returns:
-            Updated CPTs with modified structure
-        """
-        aggregated_cpts = self.aggregate_cpts(cpt_lists, weights)
-        
-        variables = [cpt['variable'] for cpt in aggregated_cpts]
+        # Start with CPTs aggregation
+        current_cpts = self.aggregate_cpts(cpt_lists, weights)
+        variables = [cpt['variable'] for cpt in current_cpts]
         all_variables = set(variables)
         
+        print(f"Starting consensus-based learning with {len(current_cpts)} variables (threshold: {consensus_threshold})")
+        
         current_edges = set()
-        for cpt in aggregated_cpts:
+        for cpt in current_cpts:
+            child = cpt['variable']
             for parent in cpt['evidence']:
-                current_edges.add((parent, cpt['variable']))
+                current_edges.add((parent, child))
         
-        proposed_edges = set()
-        edges_to_remove = set()
+        changes_made = 0
+        total_improvement = 0.0
         
-        for var1 in all_variables:
-            for var2 in all_variables:
-                if var1 != var2 and (var1, var2) not in current_edges:
-                  
-                    mi_score = self.calculate_pairwise_mi(aggregated_cpts, var1, var2)
-                    
-                    if mi_score > edge_threshold:
-                        proposed_edges.add((var1, var2))
+        while changes_made < max_changes:
+            best_change = None
+            best_score = 0.01  # Minimum improvement threshold
+            
+            # Consider adding edges based on client consensus
+            for parent in all_variables:
+                for child in all_variables:
+                    if parent != child and (parent, child) not in current_edges:
+                        if self.cyclicity_check(parent, child, current_edges):
+                            continue
                         
-                        var2_cpt = next((c for c in aggregated_cpts if c['variable'] == var2), None)
-                        if var2_cpt:
-                            for existing_parent in var2_cpt['evidence']:
-                                ci_score = self.calculate_conditional_mi(
-                                    aggregated_cpts, existing_parent, var2, [var1]
-                                )
-                                
-                                if ci_score < remove_threshold:
-                                    edges_to_remove.add((existing_parent, var2))
-        
-        modified_cpts = []
-        
-        for cpt in aggregated_cpts:
-            new_evidence = list(cpt['evidence'])
-            child = cpt['variable']
+                        child_cpt = next((c for c in current_cpts if c['variable'] == child), None)
+                        if child_cpt and len(child_cpt['evidence']) >= 4:  # Max 4 parents
+                            continue
+                        
+                        edge_score = self.score_edge_from_client_consensus(parent, child, cpt_lists, weights, consensus_threshold)
+                        
+                        if edge_score > best_score:
+                            memory_cost = self.estimate_edge_addition_cost(parent, child, current_cpts)
+                            if memory_cost < 10000:  
+                                best_change = ('add', (parent, child), edge_score)
+                                best_score = edge_score
             
-            for parent, c in proposed_edges:
-                if c == child and parent not in new_evidence:
-                    new_evidence.append(parent)
+            # Consider removing edges with weak consensus
+            for parent, child in current_edges:
+                removal_score = self.score_edge_removal_consensus(parent, child, cpt_lists, weights, consensus_threshold)
+                
+                if removal_score > best_score:
+                    best_change = ('remove', (parent, child), removal_score)
+                    best_score = removal_score
             
-            for parent, c in edges_to_remove:
-                if c == child and parent in new_evidence:
-                    new_evidence.remove(parent)
+            if best_change is None:
+                print("No beneficial changes found, stopping")
+                break
             
-            if set(new_evidence) != set(cpt['evidence']):
-                modified_cpt = self.recompute_cpt_with_new_structure(
-                    cpt, new_evidence, aggregated_cpts
-                )
-                modified_cpts.append(modified_cpt)
-            else:
-                modified_cpts.append(cpt)
+            action, edge, score = best_change
+            parent, child = edge
+            
+            if action == 'add':
+                current_cpts = self.add_edge_to_cpts(parent, child, current_cpts)
+                current_edges.add((parent, child))
+                print(f"Added edge {parent}->{child}, consensus score: {score:.4f}")
+                
+            elif action == 'remove':
+                current_cpts = self.remove_edge_from_cpts(parent, child, current_cpts)
+                current_edges.remove((parent, child))
+                print(f"Removed edge {parent}->{child}, consensus score: {score:.4f}")
+            
+            changes_made += 1
+            total_improvement += score
         
-        return modified_cpts
+        print(f"Made {changes_made} changes, total improvement: {total_improvement:.4f}")
+        return current_cpts
 
-
-    def calculate_pairwise_mi(self, cpts, var1, var2):
+    def score_edge_from_client_consensus(self, parent, child, cpt_lists, weights, consensus_threshold):
         """
-        Calculate mutual information between two variables using pairwise approach
-        This avoids creating the full joint distribution
+        Score edges based on client consensus and dependency strength
         """
-        relevant_cpts = []
+        edge_support = self.get_edge_support_from_clients(parent, child, cpt_lists, weights)
         
-        for cpt in cpts:
-            cpt_vars = {cpt['variable']} | set(cpt['evidence'])
-            if var1 in cpt_vars and var2 in cpt_vars:
-                relevant_cpts.append(cpt)
-        
-        if not relevant_cpts:
-            return self.calculate_mi_through_chain(cpts, var1, var2)
-        
-        best_cpt = min(relevant_cpts, key=lambda x: np.prod(x['cardinality']))
-        
-        var1_idx = None
-        var2_idx = None
-        
-        if best_cpt['variable'] == var1:
-            var1_idx = 0
-        elif var1 in best_cpt['evidence']:
-            var1_idx = best_cpt['evidence'].index(var1) + 1
-            
-        if best_cpt['variable'] == var2:
-            var2_idx = 0
-        elif var2 in best_cpt['evidence']:
-            var2_idx = best_cpt['evidence'].index(var2) + 1
-        
-        if var1_idx is None or var2_idx is None:
+        if edge_support < consensus_threshold:
             return 0.0
         
-        values = best_cpt['values']
+        # Calculate average dependency strength in supporting clients
+        avg_strength = 0.0
+        supporting_weight = 0.0
         
-        axes_to_sum = [i for i in range(len(values.shape)) if i != var1_idx]
-        p1 = np.sum(values, axis=tuple(axes_to_sum))
+        for i, cpts in enumerate(cpt_lists):
+            weight = weights[i]
+            child_cpt = next((c for c in cpts if c['variable'] == child), None)
+            
+            if child_cpt and parent in child_cpt['evidence']:
+                strength = self.measure_dependency_strength(parent, child, child_cpt)
+                avg_strength += weight * strength
+                supporting_weight += weight
         
-        axes_to_sum = [i for i in range(len(values.shape)) if i != var2_idx]
-        p2 = np.sum(values, axis=tuple(axes_to_sum))
+        if supporting_weight == 0:
+            return 0.0
         
-        axes_to_sum = [i for i in range(len(values.shape)) if i not in [var1_idx, var2_idx]]
-        if axes_to_sum:
-            p12 = np.sum(values, axis=tuple(axes_to_sum))
-        else:
-            p12 = values
+        avg_strength /= supporting_weight
         
-        mi = 0.0
-        p1 = p1 / np.sum(p1)  
-        p2 = p2 / np.sum(p2) 
-        p12 = p12 / np.sum(p12) 
+        consensus_score = edge_support * avg_strength
         
-        p1_flat = p1.flatten()
-        p2_flat = p2.flatten()
-        p12_flat = p12.flatten()
+        high_consensus_bonus = max(0.8, consensus_threshold + 0.2) 
+        if edge_support > high_consensus_bonus:
+            consensus_score *= 1.5
         
-        if p12.ndim == 1:
-            expected_size = len(p1_flat) * len(p2_flat)
-            if len(p12_flat) == expected_size:
-                p12 = p12_flat.reshape(len(p1_flat), len(p2_flat))
+        return consensus_score
+
+    def score_edge_removal_consensus(self, parent, child, cpt_lists, weights, consensus_threshold):
+        """
+        Score edge removal - higher score means removal is beneficial
+        """
+        # Low consensus for existing edge suggests it should be removed
+        edge_support = self.get_edge_support_from_clients(parent, child, cpt_lists, weights)
+        
+        if edge_support > consensus_threshold: 
+            return 0.0
+        
+        avg_weakness = 0.0
+        total_weight = 0.0
+        
+        for i, cpts in enumerate(cpt_lists):
+            weight = weights[i]
+            child_cpt = next((c for c in cpts if c['variable'] == child), None)
+            
+            if child_cpt:
+                if parent in child_cpt['evidence']:
+                    # Measure weakness
+                    strength = self.measure_dependency_strength(parent, child, child_cpt)
+                    weakness = max(0, 0.5 - strength)  
+                    avg_weakness += weight * weakness
+                else:
+                    avg_weakness += weight * 0.5
+                
+                total_weight += weight
+        
+        if total_weight == 0:
+            return 0.0
+        
+        avg_weakness /= total_weight
+        
+        # Score for removal = weakness * (1 - consensus)
+        removal_score = avg_weakness * (1.0 - edge_support)
+        
+        return removal_score
+
+    def measure_dependency_strength(self, parent, child, child_cpt):
+        """
+        Measure how strongly child depends on parent in this CPT using information gain
+        """
+        values = np.array(child_cpt['values'])
+        
+        if parent not in child_cpt['evidence']:
+            return 0.0
+        
+        try:
+            parent_idx = child_cpt['evidence'].index(parent)
+            
+            if values.ndim == 1:
+                return 0.1
+            
+            # Calculate marginal entropy of child
+            if values.ndim == 2:
+                marginal_child = np.mean(values, axis=1)
             else:
-                p12 = np.outer(p1_flat, p2_flat)
-        elif p12.ndim > 2:
-            if p12.size == len(p1_flat) * len(p2_flat):
-                p12 = p12_flat.reshape(len(p1_flat), len(p2_flat))
+                # Multi-dimensional case - sum over all parent configurations
+                axes_to_sum = tuple(range(1, values.ndim))
+                marginal_child = np.sum(values, axis=axes_to_sum)
+            
+            marginal_child = marginal_child / (np.sum(marginal_child) + 1e-12)
+            marginal_entropy = -np.sum(marginal_child * np.log2(marginal_child + 1e-12))
+            
+            # Calculate conditional entropy H(child|parent)
+            conditional_entropy = 0.0
+            
+            if values.ndim == 2 and len(child_cpt['evidence']) == 1:
+                # only one parent case
+                parent_card = child_cpt['evidence_card'][0]
+                parent_marginal = np.mean(values, axis=0)
+                parent_marginal = parent_marginal / (np.sum(parent_marginal) + 1e-12)
+                
+                for p_val in range(parent_card):
+                    if parent_marginal[p_val] > 1e-12:
+                        conditional_dist = values[:, p_val]
+                        conditional_dist = conditional_dist / (np.sum(conditional_dist) + 1e-12)
+                        cond_ent = -np.sum(conditional_dist * np.log2(conditional_dist + 1e-12))
+                        conditional_entropy += parent_marginal[p_val] * cond_ent
             else:
-                while p12.ndim > 2:
-                    p12 = np.sum(p12, axis=-1)
-                if p12.shape != (len(p1_flat), len(p2_flat)):
-                    p12 = np.outer(p1_flat, p2_flat)
-        
-        for i in range(len(p1_flat)):
-            for j in range(len(p2_flat)):
-                if i < p12.shape[0] and j < p12.shape[1]:
-                    p12_val = p12[i, j]
-                    p1_val = p1_flat[i]
-                    p2_val = p2_flat[j]
+                # Multi-parent case 
+                # Use average conditional entropy across parent values
+                parent_card = child_cpt['evidence_card'][parent_idx] if parent_idx < len(child_cpt['evidence_card']) else 2
+                
+                total_configs = values.shape[1] if values.ndim == 2 else np.prod(values.shape[1:])
+                configs_per_parent = total_configs // parent_card
+                
+                for p_val in range(parent_card):
+                    start_idx = p_val * configs_per_parent
+                    end_idx = min((p_val + 1) * configs_per_parent, total_configs)
                     
-                    if p12_val > 1e-12 and p1_val > 1e-12 and p2_val > 1e-12:
-                        mi += p12_val * np.log2(p12_val / (p1_val * p2_val))
-        
-        return max(0, mi)
+                    if values.ndim == 2:
+                        slice_values = values[:, start_idx:end_idx]
+                        conditional_dist = np.mean(slice_values, axis=1)
+                    else:
+                        flat_values = values.reshape(values.shape[0], -1)
+                        conditional_dist = np.mean(flat_values[:, start_idx:end_idx], axis=1)
+                    
+                    conditional_dist = conditional_dist / (np.sum(conditional_dist) + 1e-12)
+                    cond_ent = -np.sum(conditional_dist * np.log2(conditional_dist + 1e-12))
+                    conditional_entropy += cond_ent / parent_card  # Equal weighting
+            
+            # Information gain 
+            info_gain = marginal_entropy - conditional_entropy
+            max_possible_gain = marginal_entropy
+            normalized_gain = info_gain / (max_possible_gain + 1e-12)
+            
+            return max(0.0, min(1.0, normalized_gain))
+            
+        except Exception as e:
+            print(f"Warning: Error measuring dependency strength for {parent}->{child}: {e}")
+            return 0.0
 
-
-    def calculate_mi_through_chain(self, cpts, var1, var2):
+    def get_variable_cardinality(self, variable, cpts):
         """
-        Calculate MI between two variables that don't appear in the same CPT
-        by finding a connecting path through the network
+        Get cardinality of a variable from CPTs
         """
-        graph = defaultdict(set)
         for cpt in cpts:
-            child = cpt['variable']
-            for parent in cpt['evidence']:
-                graph[parent].add(child)
-                graph[child].add(parent) 
+            if cpt['variable'] == variable:
+                return cpt['variable_card']
+            elif variable in cpt.get('evidence', []):
+                idx = cpt['evidence'].index(variable)
+                if idx < len(cpt['evidence_card']):
+                    return cpt['evidence_card'][idx]
         
-        # Find shortest path between var1 and var2
-        def find_path(start, end, visited=None):
-            if visited is None:
-                visited = set()
-            
-            if start == end:
-                return [start]
-            
-            if start in visited:
-                return None
-            
-            visited.add(start)
-            
-            for neighbor in graph[start]:
-                path = find_path(neighbor, end, visited.copy())
-                if path:
-                    return [start] + path
-            
-            return None
-        
-        path = find_path(var1, var2)
-        
-        if path is None or len(path) < 2:
-            return 0.0
-        
-        # Calculate MI along the path 
-        # For a path A->B->C, MI(A,C) is approximated by the minimum MI along the path
-        min_mi = float('inf')
-        
-        for i in range(len(path) - 1):
-            v1, v2 = path[i], path[i + 1]
-            
-            # Find CPT containing both variables
-            for cpt in cpts:
-                cpt_vars = {cpt['variable']} | set(cpt['evidence'])
-                if v1 in cpt_vars and v2 in cpt_vars:
-                    mi = self.calculate_pairwise_mi(cpts, v1, v2)
-                    min_mi = min(min_mi, mi)
-                    break
-        
-        decay_factor = 0.8 ** (len(path) - 2) 
-        
-        return max(0, min_mi * decay_factor if min_mi != float('inf') else 0.0)
-
-
-    def calculate_conditional_mi(self, cpts, var1, var2, conditioning_vars):
+        return 2  
+    
+    def estimate_edge_addition_cost(self, parent, child, current_cpts):
         """
-        Calculate conditional MI without constructing full joint distribution
+        Estimate memory cost of adding an edge
         """
-        required_vars = {var1, var2} | set(conditioning_vars)
+        child_cpt = next((c for c in current_cpts if c['variable'] == child), None)
+        if not child_cpt:
+            return 1000  
         
-        relevant_cpts = []
-        for cpt in cpts:
-            cpt_vars = {cpt['variable']} | set(cpt['evidence'])
-            if required_vars.issubset(cpt_vars):
-                relevant_cpts.append(cpt)
+        current_size = np.prod(child_cpt['cardinality'])
         
-        if not relevant_cpts:
-            # Can't compute exact conditional MI, return approximation
-            # If conditioning variables make var1 and var2 independent, 
-            # their unconditional MI should be low
-            uncond_mi = self.calculate_pairwise_mi(cpts, var1, var2)
-            
-            # If we have strong connections to conditioning vars, the conditional MI should be lower
-            var1_to_cond = max([self.calculate_pairwise_mi(cpts, var1, cond) for cond in conditioning_vars] + [0])
-            var2_to_cond = max([self.calculate_pairwise_mi(cpts, var2, cond) for cond in conditioning_vars] + [0])
-            
-            # If both variables are strongly connected to conditioning variables,
-            # reduce the conditional MI
-            reduction_factor = min(1.0, (var1_to_cond + var2_to_cond) / 2.0)
-            
-            return uncond_mi * (1 - reduction_factor)
+        parent_card = self.get_variable_cardinality(parent, current_cpts)
         
-        best_cpt = min(relevant_cpts, key=lambda x: np.prod(x['cardinality']))
-        
-        var1_idx = None
-        var2_idx = None
-        cond_indices = []
-        
-        if best_cpt['variable'] == var1:
-            var1_idx = 0
-        elif var1 in best_cpt['evidence']:
-            var1_idx = best_cpt['evidence'].index(var1) + 1
-            
-        if best_cpt['variable'] == var2:
-            var2_idx = 0
-        elif var2 in best_cpt['evidence']:
-            var2_idx = best_cpt['evidence'].index(var2) + 1
-        
-        for cond_var in conditioning_vars:
-            if best_cpt['variable'] == cond_var:
-                cond_indices.append(0)
-            elif cond_var in best_cpt['evidence']:
-                cond_indices.append(best_cpt['evidence'].index(cond_var) + 1)
-        
-        if var1_idx is None or var2_idx is None or len(cond_indices) != len(conditioning_vars):
-            return 0.0
-        
-        values = best_cpt['values']
-        values = values / np.sum(values)  
-        
-        all_relevant_axes = [var1_idx, var2_idx] + cond_indices
-        
-        # Marginalize to get P(var1, var2, cond_vars)
-        axes_to_sum = [i for i in range(len(values.shape)) if i not in all_relevant_axes]
-        if axes_to_sum:
-            relevant_dist = np.sum(values, axis=tuple(axes_to_sum))
-        else:
-            relevant_dist = values
-        
-        # If the conditional distribution is uniform,
-        # then conditional MI is low
-        if relevant_dist.size == 0:
-            return 0.0
-        
-        # More uniform = lower conditional dependence
-        entropy = -np.sum(relevant_dist * np.log2(relevant_dist + 1e-12))
-        max_entropy = np.log2(relevant_dist.size)
-        
-        if max_entropy > 0:
-            uniformity = entropy / max_entropy
-            # High uniformity suggests low conditional dependence
-            return (1 - uniformity) * self.calculate_pairwise_mi(cpts, var1, var2)
-        
-        return 0.0
+        new_size = current_size * parent_card
+        return new_size - current_size
 
+    def cyclicity_check(self, parent, child, current_edges):
+        """
+        Check if adding parent->child would create a cycle
+        """
+        try:
+            import networkx as nx
+            
+            G = nx.DiGraph()
+            G.add_edges_from(current_edges)
+            G.add_edge(parent, child)
+            
+            return not nx.is_directed_acyclic_graph(G)
+        
+        except:
+            # Fallback: simple path check
+            def has_path(start, end, edges, visited=None):
+                if visited is None:
+                    visited = set()
+                if start == end:
+                    return True
+                if start in visited:
+                    return False
+                visited.add(start)
+                
+                for p, c in edges:
+                    if p == start and has_path(c, end, edges, visited.copy()):
+                        return True
+                return False
+            
+            return has_path(child, parent, current_edges)
+
+    def add_edge_to_cpts(self, parent, child, current_cpts):
+        """
+        Add an edge by updating the child's CPT to include the new parent
+        """
+        updated_cpts = []
+        
+        for cpt in current_cpts:
+            if cpt['variable'] == child:
+                new_evidence = list(cpt['evidence']) + [parent]
+                updated_cpt = self.recompute_cpt_with_new_structure(cpt, new_evidence, current_cpts)
+                updated_cpts.append(updated_cpt)
+            else:
+                updated_cpts.append(cpt)
+        
+        return updated_cpts
+
+    def remove_edge_from_cpts(self, parent, child, current_cpts):
+        """
+        Remove an edge by updating the child's CPT to exclude the parent
+        """
+        updated_cpts = []
+        
+        for cpt in current_cpts:
+            if cpt['variable'] == child and parent in cpt.get('evidence', []):
+                new_evidence = [p for p in cpt['evidence'] if p != parent]
+                updated_cpt = self.recompute_cpt_with_new_structure(cpt, new_evidence, current_cpts)
+                updated_cpts.append(updated_cpt)
+            else:
+                updated_cpts.append(cpt)
+        
+        return updated_cpts
 
     def recompute_cpt_with_new_structure(self, original_cpt, new_evidence, all_cpts):
         """
@@ -1236,7 +1278,6 @@ class Coordinator(Client):
         variable = original_cpt['variable']
         var_card = original_cpt['variable_card']
         
-        # Calculate new evidence cardinalities
         new_evidence_cards = []
         for ev in new_evidence:
             ev_card = 2 
@@ -1259,11 +1300,9 @@ class Coordinator(Client):
         
         new_values = np.ones((var_card, required_configs)) / var_card
         
-        # Try to preserve relationships from old CPT
         old_evidence = original_cpt['evidence']
         old_values = np.array(original_cpt['values'])
         
-        # Flatten old values to 2D
         if old_values.ndim > 2:
             old_values = old_values.reshape(var_card, -1)
         elif old_values.ndim == 1:
@@ -1273,14 +1312,12 @@ class Coordinator(Client):
         
         common_evidence = [ev for ev in new_evidence if ev in old_evidence]
         if len(common_evidence) == len(old_evidence) == len(new_evidence):
-            # Same evidence set, use old values
             if old_values.shape[1] == required_configs:
                 new_values = old_values
             else:
                 marginal = np.mean(old_values, axis=1, keepdims=True)
                 new_values = np.tile(marginal / np.sum(marginal), (1, required_configs))
         elif common_evidence:
-            # Partial overlap, use marginal distribution
             marginal = np.mean(old_values, axis=1, keepdims=True)
             marginal = marginal / np.sum(marginal)
             new_values = np.tile(marginal, (1, required_configs))

@@ -132,13 +132,21 @@ class ReadInputState(AppState):
         with open(config_path) as f:
             config_file = yaml.load(f, Loader=yaml.FullLoader)
 
-        config = config_file['fc_fedbaynet']
+        config = config_file['fc_fedbaynet_prox']
         self.store('dataset', config['input']['dataset_loc'])
         self.store('bwlists', config['input']['bwlists_loc'])
         self.store('split_mode', config['split']['mode'])
         self.store('split_dir', config['split']['dir']) 
-        self.store('convergence_threshold', config['convergence_threshold'])  
         self.store('max_iterations', config['max_iterations'])
+        self.store('cv_folds', config['cv_folds'])
+        self.store('mu', config['fedprox']['mu'])
+        self.store('epochs', config['fedprox']['epochs'])
+
+        self.store('sim_thresh', config['network_fusion']['sim_thresh'])
+        self.store('expert_weight', config['network_fusion']['expert_weight'])
+
+        self.store('consensus_thresh', config['consensus_params']['consensus_thresh'])
+        self.store('max_changes', config['consensus_params']['max_changes'])
         
         splits = {}
         if self.load('split_mode') == "directory":
@@ -184,6 +192,10 @@ class LocalComputationState(AppState):
         dataset = self.load('dataset')
         blacklist = self.load('blacklist')
         whitelist = self.load('whitelist')
+        sim_thresh = self.load('sim_thresh')
+        expert_weight = self.load('expert_weight')
+        mu = self.load('mu')
+        epochs = self.load('epochs')
         
         participant = Coordinator() if self.is_coordinator else Client()
 
@@ -195,6 +207,8 @@ class LocalComputationState(AppState):
                 "whitelist": whitelist,
                 "iteration": iteration
             }
+            initial_local_network = participant.create_client_model(dataset)
+            self.store('initial_local_network', initial_local_network)
         else:
             if self.is_coordinator:
                 global_network = self.load("global_network")
@@ -203,12 +217,12 @@ class LocalComputationState(AppState):
                 global_network = self.load("global_network_client")
                 aggregated_cpts = self.load("aggregated_cpts_client")
             
-            local_network = participant.create_client_model(dataset)
-            client_network = participant.fuse_bayesian_networks(global_network, local_network, dataset)
+            initial_local_network = self.load('initial_local_network')
+            client_network = participant.fuse_bayesian_networks(global_network, initial_local_network, dataset, similarity_threshold=sim_thresh, expert_weight=expert_weight)
 
             client_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
 
-            if iteration >= max_iterations:
+            if iteration > max_iterations:
                 results_path = os.path.join(output_dir, "results.csv")
                 avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=results_path)
                 self.log(f"[CLIENT] Final results saved to {results_path}")
@@ -273,7 +287,9 @@ class AggregateState(AppState):
         output_dir = "/mnt/output"
         iteration = self.load('iteration')
         max_iterations = self.load('max_iterations')
-        num_folds = self.load('num_folds')  
+        consensus_thresh = self.load('consensus_thresh')
+        max_changes = self.load('max_changes')
+
         self.log(f"[COORDINATOR] Aggregating iteration {iteration}")
 
         coordinator = Coordinator()
@@ -290,7 +306,7 @@ class AggregateState(AppState):
             self.log("[COORDINATOR] Aggregating CPTs and building global network structure...")
             clients_cpts = [payload["client_cpts"] for payload in client_payload]
             dataset_sizes = [payload["dataset_size"] for payload in client_payload]
-            aggregated_cpts = coordinator.learn_network_structure(clients_cpts, dataset_sizes)
+            aggregated_cpts = coordinator.learn_parameters(clients_cpts, dataset_sizes, max_changes=max_changes, consensus_threshold=consensus_thresh)
             global_network = coordinator.build_model_from_cpts(aggregated_cpts)
 
         self.store("aggregated_cpts", aggregated_cpts)
@@ -307,9 +323,9 @@ class AggregateState(AppState):
         self.log(f"[DEBUG] Output dir contents: {os.listdir(output_dir)}")
 
         # Stopping condition
-        if iteration >= int(max_iterations):
+        if iteration > int(max_iterations):
             self.broadcast_data({'message': 'done'})
-            self.log(f"[COORDINATOR] Completed after {iteration} iterations (max iterations: {num_folds})")
+            self.log(f"[COORDINATOR] Completed after {iteration} iterations (max iterations: {max_iterations})")
             return FINAL
 
         iteration += 1
@@ -360,23 +376,30 @@ class FinalState(AppState):
     def register(self):
         self.register_transition(TERMINAL, Role.BOTH)
 
+    def plot_accuracy(self, accs, output_dir, filename="accuracy_trend.png"):
+        os.makedirs(output_dir, exist_ok=True)
+
+        iterations = np.arange(1, len(accs) + 1)
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(iterations, accs, marker='o', linestyle='-', color='#22666F')
+        plt.title("Average Accuracy Across Federated Iterations")
+        plt.xlabel("Iteration")
+        plt.ylabel("Average Accuracy (%)")
+        plt.xticks(np.arange(0, len(accs) + 1, 1))
+        plt.ylim(0.5, 1)
+        plt.yticks(np.arange(0.5, 1.05, 0.1))
+        acc_plot_path = os.path.join(output_dir, filename)
+        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return acc_plot_path
+
     def run(self):
         self.log("Learning Complete")
 
         accs = self.load("accuracy_history")
-        plt.figure(figsize=(8, 5))
-        plt.plot(range(1, len(accs) + 1), accs, marker='o', linestyle='-')
-        plt.title("Average Accuracy Across Federated Iterations")
-        plt.xlabel("Iteration")
-        plt.ylabel("Average Accuracy")
-        plt.xticks(np.arange(0, 10, 1))
-        plt.grid(True)
-        
         output_dir = "/mnt/output"
-        acc_plot_path = os.path.join(output_dir, "accuracy_trend.png")
-        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        self.log(f"[FINAL] Accuracy trend saved to {acc_plot_path}")
+        acc_plot_path = self.plot_accuracy(accs, output_dir)
 
+        self.log(f"[FINAL] Accuracy trend saved to {acc_plot_path}")
         return TERMINAL

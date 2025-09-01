@@ -6,6 +6,11 @@ fc_fedbaynet:
   split:
     mode: "file"
     dir: "."        
-  max_iterations: 5
-  convergence_threshold: 0.01
-  num_folds: 5
+  max_iterations: 20
+  cv_folds: 5
+  network_fusion:
+    sim_thresh: 0.3
+    expert_weight: 0.6
+  consensus_params:
+    consensus_thresh: 0.6
+    max_changes: 5 # FedGES
