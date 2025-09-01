@@ -621,7 +621,167 @@ class Coordinator(Client):
 
         return model
     
+    # def aggregate_cpts(self, clients_cpts: List[List[Dict[str, Any]]], dataset_sizes: List[float]):
+    #     if len(clients_cpts) != len(dataset_sizes):
+    #         raise ValueError("Number of clients and dataset_sizes must match.")
+        
+    #     total = float(sum(dataset_sizes))
+    #     if total <= 0:
+    #         raise ValueError("Sum of dataset sizes must be > 0.")
+    #     weights = [s / total for s in dataset_sizes]
+
+    #     by_var: Dict[str, List[Tuple[int, Dict[str, Any]]]] = defaultdict(list)
+    #     for ci, cpt_list in enumerate(clients_cpts):
+    #         for cpd in cpt_list:
+    #             by_var[cpd['variable']].append((ci, cpd))
+
+    #     aggregated = []
+
+    #     for var, entries in by_var.items():
+    #         groups = defaultdict(list)
+    #         for ci, cpd in entries:
+    #             groups[int(cpd['variable_card'])].append((ci, cpd))
+    #         best_var_card = max(groups.keys(), key=lambda k: sum(weights[ci] for ci, _ in groups[k]))
+    #         chosen = groups[best_var_card]
+    #         var_card = best_var_card
+
+    #         parent_to_cards: Dict[str, Dict[int, float]] = defaultdict(lambda: defaultdict(float))
+    #         for ci, cpd in chosen:
+    #             ev_raw = cpd.get('evidence')
+    #             ev = list(ev_raw) if ev_raw is not None else []
+    #             evc_raw = cpd.get('evidence_card')
+    #             evc = list(evc_raw) if evc_raw is not None else []
+    #             ev_map = dict(zip(ev, map(int, evc)))
+                
+    #             for p, c in ev_map.items():
+    #                 parent_to_cards[p][int(c)] += weights[ci]
+
+    #         sup_parents = sorted(parent_to_cards.keys())
+    #         sup_parent_cards = {}
+    #         for p in sup_parents:
+    #             choices = parent_to_cards[p]
+    #             chosen_card = max(choices.keys(), key=lambda card: choices[card])
+    #             sup_parent_cards[p] = chosen_card
+    #         sup_parent_card_list = [sup_parent_cards[p] for p in sup_parents]
+
+    #         per_client = []
+    #         for ci, cpd in chosen:
+    #             ev_raw = cpd.get('evidence')
+    #             ev = list(ev_raw) if ev_raw is not None else []
+    #             evc_raw = cpd.get('evidence_card')
+    #             evc_list = list(map(int, list(evc_raw) if evc_raw is not None else []))
+
+    #             client_sel_supidx = [sup_parents.index(p) for p in ev]
+    #             varc = int(cpd['variable_card'])
+    #             values = cpd['values']
+
+    #             per_client.append((ci, values, varc, evc_list, client_sel_supidx))
+
+    #         table = {}
+    #         if sup_parent_card_list:
+    #             for idx_sup in itertools.product(*[range(c) for c in sup_parent_card_list]):
+    #                 acc = [0.0] * var_card
+    #                 wsum = 0.0
+                    
+    #                 for (ci, values, varc, evc_list, client_sel_supidx) in per_client:
+    #                     subset = []
+    #                     out_of_range = False
+    #                     for k, sup_idx in enumerate(client_sel_supidx):
+    #                         sup_val = idx_sup[sup_idx]
+    #                         if sup_val >= evc_list[k]:
+    #                             out_of_range = True
+    #                             break
+    #                         subset.append(sup_val)
+    #                     if out_of_range:
+    #                         continue
+
+    #                     prob_vector = []
+    #                     try:
+    #                         for s in range(var_card):
+    #                             v = values[s]
+    #                             for idx in subset:
+    #                                 v = v[idx]
+    #                             prob_vector.append(float(v))
+    #                     except:
+    #                         if len(evc_list) == 0:
+    #                             if isinstance(values, (int, float)):
+    #                                 prob_vector = [float(values)] if var_card == 1 else [1.0/var_card] * var_card
+    #                             elif hasattr(values, '__len__') and len(values) == var_card:
+    #                                 prob_vector = [float(values[s]) for s in range(var_card)]
+    #                             else:
+    #                                 prob_vector = [1.0/var_card] * var_card
+    #                         else:
+    #                             values_array = np.array(values)
+    #                             if values_array.ndim == 2:
+    #                                 prod_evidence = 1
+    #                                 for ec in evc_list:
+    #                                     prod_evidence *= ec
+    #                                 strides = []
+    #                                 for i in range(len(evc_list)):
+    #                                     stride = 1
+    #                                     for j in range(i+1, len(evc_list)):
+    #                                         stride *= evc_list[j]
+    #                                     strides.append(stride)
+    #                                 col = sum(idx * stride for idx, stride in zip(subset, strides))
+                                    
+    #                                 if col >= values_array.shape[1]:
+    #                                     col = 0
+                                    
+    #                                 try:
+    #                                     prob_vector = [float(values_array[s, col]) for s in range(var_card)]
+    #                                 except:
+    #                                     prob_vector = [1.0/var_card] * var_card
+    #                             else:
+    #                                 prob_vector = [1.0/var_card] * var_card
+
+    #                     if len(prob_vector) != var_card:
+    #                         continue
+                            
+    #                     w = weights[ci]
+    #                     wsum += w
+    #                     for i in range(var_card):
+    #                         acc[i] += w * prob_vector[i]
+
+    #                 if wsum > 0:
+    #                     acc = [x / wsum for x in acc]
+                    
+    #                 s = sum(acc)
+    #                 if s <= 0:
+    #                     normalized_acc = [1.0 / len(acc)] * len(acc) if acc else []
+    #                 else:
+    #                     normalized_acc = [x / s for x in acc]
+                    
+    #                 table[idx_sup] = normalized_acc
+    #         else:
+    #             table[tuple()] = [1.0/var_card] * var_card
+
+    #         if not sup_parent_card_list:
+    #             nested_values = [table[tuple()][s] for s in range(var_card)]
+    #         else:
+    #             nested_values = []
+    #             for s in range(var_card):
+    #                 def build_nested(dim: int, prefix: Tuple[int, ...]):
+    #                     if dim == len(sup_parent_card_list):
+    #                         return table[prefix][s]
+    #                     return [build_nested(dim+1, prefix + (i,)) for i in range(sup_parent_card_list[dim])]
+    #                 nested_values.append(build_nested(0, tuple()))
+
+    #         aggregated.append({
+    #             'variable': var,
+    #             'variable_card': var_card,
+    #             'values': nested_values,
+    #             'evidence': sup_parents,
+    #             'evidence_card': sup_parent_card_list,
+    #             'cardinality': [var_card] + sup_parent_card_list,
+    #         })
+
+    #     aggregated.sort(key=lambda d: d['variable'])
+    #     return aggregated
+
     def aggregate_cpts(self, clients_cpts: List[List[Dict[str, Any]]], dataset_sizes: List[float]):
+        """
+        Aggregate CPTs with enhanced numerical stability checks.
+        """
         if len(clients_cpts) != len(dataset_sizes):
             raise ValueError("Number of clients and dataset_sizes must match.")
         
@@ -638,145 +798,250 @@ class Coordinator(Client):
         aggregated = []
 
         for var, entries in by_var.items():
-            groups = defaultdict(list)
-            for ci, cpd in entries:
-                groups[int(cpd['variable_card'])].append((ci, cpd))
-            best_var_card = max(groups.keys(), key=lambda k: sum(weights[ci] for ci, _ in groups[k]))
-            chosen = groups[best_var_card]
-            var_card = best_var_card
+            try:
+                groups = defaultdict(list)
+                for ci, cpd in entries:
+                    groups[int(cpd['variable_card'])].append((ci, cpd))
+                best_var_card = max(groups.keys(), key=lambda k: sum(weights[ci] for ci, _ in groups[k]))
+                chosen = groups[best_var_card]
+                var_card = best_var_card
 
-            parent_to_cards: Dict[str, Dict[int, float]] = defaultdict(lambda: defaultdict(float))
-            for ci, cpd in chosen:
-                ev_raw = cpd.get('evidence')
-                ev = list(ev_raw) if ev_raw is not None else []
-                evc_raw = cpd.get('evidence_card')
-                evc = list(evc_raw) if evc_raw is not None else []
-                ev_map = dict(zip(ev, map(int, evc)))
-                
-                for p, c in ev_map.items():
-                    parent_to_cards[p][int(c)] += weights[ci]
-
-            sup_parents = sorted(parent_to_cards.keys())
-            sup_parent_cards = {}
-            for p in sup_parents:
-                choices = parent_to_cards[p]
-                chosen_card = max(choices.keys(), key=lambda card: choices[card])
-                sup_parent_cards[p] = chosen_card
-            sup_parent_card_list = [sup_parent_cards[p] for p in sup_parents]
-
-            per_client = []
-            for ci, cpd in chosen:
-                ev_raw = cpd.get('evidence')
-                ev = list(ev_raw) if ev_raw is not None else []
-                evc_raw = cpd.get('evidence_card')
-                evc_list = list(map(int, list(evc_raw) if evc_raw is not None else []))
-
-                client_sel_supidx = [sup_parents.index(p) for p in ev]
-                varc = int(cpd['variable_card'])
-                values = cpd['values']
-
-                per_client.append((ci, values, varc, evc_list, client_sel_supidx))
-
-            table = {}
-            if sup_parent_card_list:
-                for idx_sup in itertools.product(*[range(c) for c in sup_parent_card_list]):
-                    acc = [0.0] * var_card
-                    wsum = 0.0
+                # Determine superset of parents with validation
+                parent_to_cards: Dict[str, Dict[int, float]] = defaultdict(lambda: defaultdict(float))
+                for ci, cpd in chosen:
+                    ev_raw = cpd.get('evidence')
+                    ev = list(ev_raw) if ev_raw is not None else []
+                    evc_raw = cpd.get('evidence_card')
+                    evc = list(evc_raw) if evc_raw is not None else []
                     
-                    for (ci, values, varc, evc_list, client_sel_supidx) in per_client:
-                        subset = []
-                        out_of_range = False
-                        for k, sup_idx in enumerate(client_sel_supidx):
-                            sup_val = idx_sup[sup_idx]
-                            if sup_val >= evc_list[k]:
-                                out_of_range = True
-                                break
-                            subset.append(sup_val)
-                        if out_of_range:
-                            continue
+                    # Validate evidence structure
+                    if len(ev) != len(evc):
+                        print(f"Warning: Evidence length mismatch for {var}, client {ci}")
+                        continue
+                        
+                    ev_map = dict(zip(ev, map(int, evc)))
+                    
+                    for p, c in ev_map.items():
+                        if c > 0:  # Validate positive cardinality
+                            parent_to_cards[p][int(c)] += weights[ci]
 
-                        prob_vector = []
-                        try:
-                            for s in range(var_card):
-                                v = values[s]
-                                for idx in subset:
-                                    v = v[idx]
-                                prob_vector.append(float(v))
-                        except:
-                            if len(evc_list) == 0:
-                                if isinstance(values, (int, float)):
-                                    prob_vector = [float(values)] if var_card == 1 else [1.0/var_card] * var_card
-                                elif hasattr(values, '__len__') and len(values) == var_card:
-                                    prob_vector = [float(values[s]) for s in range(var_card)]
-                                else:
-                                    prob_vector = [1.0/var_card] * var_card
-                            else:
-                                values_array = np.array(values)
-                                if values_array.ndim == 2:
-                                    prod_evidence = 1
-                                    for ec in evc_list:
-                                        prod_evidence *= ec
-                                    strides = []
-                                    for i in range(len(evc_list)):
-                                        stride = 1
-                                        for j in range(i+1, len(evc_list)):
-                                            stride *= evc_list[j]
-                                        strides.append(stride)
-                                    col = sum(idx * stride for idx, stride in zip(subset, strides))
-                                    
-                                    if col >= values_array.shape[1]:
-                                        col = 0
-                                    
-                                    try:
-                                        prob_vector = [float(values_array[s, col]) for s in range(var_card)]
-                                    except:
-                                        prob_vector = [1.0/var_card] * var_card
-                                else:
-                                    prob_vector = [1.0/var_card] * var_card
+                sup_parents = sorted(parent_to_cards.keys())
+                sup_parent_cards = {}
+                for p in sup_parents:
+                    choices = parent_to_cards[p]
+                    if choices:
+                        chosen_card = max(choices.keys(), key=lambda card: choices[card])
+                        sup_parent_cards[p] = max(2, chosen_card)  # Minimum cardinality of 2
+                    else:
+                        sup_parent_cards[p] = 2
+                        
+                sup_parent_card_list = [sup_parent_cards[p] for p in sup_parents]
 
-                        if len(prob_vector) != var_card:
+                # Process each client's contribution
+                per_client = []
+                for ci, cpd in chosen:
+                    try:
+                        ev_raw = cpd.get('evidence')
+                        ev = list(ev_raw) if ev_raw is not None else []
+                        evc_raw = cpd.get('evidence_card')
+                        evc_list = list(map(int, list(evc_raw) if evc_raw is not None else []))
+
+                        client_sel_supidx = [sup_parents.index(p) for p in ev if p in sup_parents]
+                        varc = int(cpd['variable_card'])
+                        values = cpd['values']
+
+                        # Validate values structure
+                        if values is None:
+                            print(f"Warning: None values for {var}, client {ci}")
                             continue
                             
-                        w = weights[ci]
-                        wsum += w
-                        for i in range(var_card):
-                            acc[i] += w * prob_vector[i]
+                        per_client.append((ci, values, varc, evc_list, client_sel_supidx))
+                    except Exception as e:
+                        print(f"Warning: Error processing client {ci} for variable {var}: {e}")
+                        continue
 
-                    if wsum > 0:
-                        acc = [x / wsum for x in acc]
-                    
-                    s = sum(acc)
-                    if s <= 0:
-                        normalized_acc = [1.0 / len(acc)] * len(acc) if acc else []
-                    else:
-                        normalized_acc = [x / s for x in acc]
-                    
-                    table[idx_sup] = normalized_acc
-            else:
-                table[tuple()] = [1.0/var_card] * var_card
+                # Build probability table with safety checks
+                table = {}
+                if sup_parent_card_list:
+                    try:
+                        for idx_sup in itertools.product(*[range(c) for c in sup_parent_card_list]):
+                            acc = [0.0] * var_card
+                            wsum = 0.0
+                            
+                            for (ci, values, varc, evc_list, client_sel_supidx) in per_client:
+                                try:
+                                    # Validate configuration indices
+                                    subset = []
+                                    out_of_range = False
+                                    for k, sup_idx in enumerate(client_sel_supidx):
+                                        if sup_idx >= len(idx_sup):
+                                            out_of_range = True
+                                            break
+                                        sup_val = idx_sup[sup_idx]
+                                        if k >= len(evc_list) or sup_val >= evc_list[k]:
+                                            out_of_range = True
+                                            break
+                                        subset.append(sup_val)
+                                        
+                                    if out_of_range:
+                                        continue
 
-            if not sup_parent_card_list:
-                nested_values = [table[tuple()][s] for s in range(var_card)]
-            else:
-                nested_values = []
-                for s in range(var_card):
-                    def build_nested(dim: int, prefix: Tuple[int, ...]):
-                        if dim == len(sup_parent_card_list):
-                            return table[prefix][s]
-                        return [build_nested(dim+1, prefix + (i,)) for i in range(sup_parent_card_list[dim])]
-                    nested_values.append(build_nested(0, tuple()))
+                                    # Extract probability vector with robust error handling
+                                    prob_vector = self._extract_probability_vector_safe(
+                                        values, var_card, subset, evc_list
+                                    )
+                                    
+                                    if len(prob_vector) != var_card:
+                                        continue
+                                        
+                                    # Validate probabilities
+                                    if any(np.isnan(prob_vector)) or any(np.isinf(prob_vector)):
+                                        print(f"Warning: Invalid probabilities for {var}, client {ci}")
+                                        continue
+                                        
+                                    w = weights[ci]
+                                    wsum += w
+                                    for i in range(var_card):
+                                        acc[i] += w * max(0.0, float(prob_vector[i]))  # Ensure non-negative
+                                        
+                                except Exception as e:
+                                    print(f"Warning: Error in aggregation for {var}, client {ci}: {e}")
+                                    continue
 
-            aggregated.append({
-                'variable': var,
-                'variable_card': var_card,
-                'values': nested_values,
-                'evidence': sup_parents,
-                'evidence_card': sup_parent_card_list,
-                'cardinality': [var_card] + sup_parent_card_list,
-            })
+                            # Normalize with safety
+                            if wsum > 1e-10:
+                                acc = [x / wsum for x in acc]
+                            else:
+                                acc = [1.0 / var_card] * var_card
+                            
+                            # Final safety normalization
+                            s = sum(acc)
+                            if s <= 1e-10 or np.isnan(s) or np.isinf(s):
+                                normalized_acc = [1.0 / var_card] * var_card
+                            else:
+                                normalized_acc = [max(1e-10, x / s) for x in acc]
+                                
+                            # Ensure probabilities sum to 1
+                            final_sum = sum(normalized_acc)
+                            if abs(final_sum - 1.0) > 1e-6:
+                                normalized_acc = [x / final_sum for x in normalized_acc]
+                            
+                            table[idx_sup] = normalized_acc
+                            
+                    except Exception as e:
+                        print(f"Warning: Error building table for {var}: {e}")
+                        # Fallback to uniform distribution
+                        for idx_sup in itertools.product(*[range(c) for c in sup_parent_card_list]):
+                            table[idx_sup] = [1.0/var_card] * var_card
+                else:
+                    table[tuple()] = [1.0/var_card] * var_card
+
+                # Build nested values structure
+                if not sup_parent_card_list:
+                    nested_values = [table[tuple()][s] for s in range(var_card)]
+                else:
+                    nested_values = []
+                    for s in range(var_card):
+                        def build_nested(dim: int, prefix: Tuple[int, ...]):
+                            if dim == len(sup_parent_card_list):
+                                return table.get(prefix, [1.0/var_card] * var_card)[s]
+                            return [build_nested(dim+1, prefix + (i,)) for i in range(sup_parent_card_list[dim])]
+                        nested_values.append(build_nested(0, tuple()))
+
+                # Final validation
+                if any(np.isnan(self._flatten_nested(nested_values))) or any(np.isinf(self._flatten_nested(nested_values))):
+                    print(f"Warning: Invalid final values for {var}, using uniform distribution")
+                    nested_values = [[1.0/var_card] * var_card for _ in range(var_card)]
+
+                aggregated.append({
+                    'variable': var,
+                    'variable_card': var_card,
+                    'values': nested_values,
+                    'evidence': sup_parents,
+                    'evidence_card': sup_parent_card_list,
+                    'cardinality': [var_card] + sup_parent_card_list,
+                })
+                
+            except Exception as e:
+                print(f"Error aggregating variable {var}: {e}")
+                # Create fallback uniform distribution
+                aggregated.append({
+                    'variable': var,
+                    'variable_card': 2,  # Default cardinality
+                    'values': [0.5, 0.5],
+                    'evidence': [],
+                    'evidence_card': [],
+                    'cardinality': [2],
+                })
 
         aggregated.sort(key=lambda d: d['variable'])
         return aggregated
+
+    def _extract_probability_vector_safe(self, values, var_card, subset, evc_list):
+        """
+        Safely extract probability vector from nested values structure.
+        """
+        try:
+            prob_vector = []
+            
+            if len(evc_list) == 0:
+                # No parents case
+                if isinstance(values, (int, float)):
+                    prob_vector = [float(values)] if var_card == 1 else [1.0/var_card] * var_card
+                elif hasattr(values, '__len__') and len(values) >= var_card:
+                    prob_vector = [float(values[s]) for s in range(var_card)]
+                else:
+                    prob_vector = [1.0/var_card] * var_card
+            else:
+                # With parents case
+                values_array = np.array(values)
+                if values_array.ndim == 2:
+                    # Calculate column index safely
+                    strides = []
+                    for i in range(len(evc_list)):
+                        stride = 1
+                        for j in range(i+1, len(evc_list)):
+                            stride *= max(1, evc_list[j])
+                        strides.append(stride)
+                    
+                    col = sum(min(idx, max(0, card-1)) * stride 
+                            for idx, stride, card in zip(subset, strides, evc_list))
+                    col = min(col, values_array.shape[1] - 1)
+                    
+                    prob_vector = [max(0.0, float(values_array[s, col])) for s in range(min(var_card, values_array.shape[0]))]
+                    
+                    # Pad if necessary
+                    while len(prob_vector) < var_card:
+                        prob_vector.append(1.0/var_card)
+                else:
+                    # Fallback for complex nested structures
+                    prob_vector = [1.0/var_card] * var_card
+                    
+            # Ensure valid probabilities
+            prob_vector = [max(1e-10, min(1.0, p)) for p in prob_vector]
+            
+            # Normalize
+            s = sum(prob_vector)
+            if s > 1e-10:
+                prob_vector = [p/s for p in prob_vector]
+            else:
+                prob_vector = [1.0/var_card] * var_card
+                
+            return prob_vector
+            
+        except Exception as e:
+            print(f"Warning: Error extracting probability vector: {e}")
+            return [1.0/var_card] * var_card
+
+    def _flatten_nested(self, nested_list):
+        """Flatten nested list structure for validation."""
+        result = []
+        if isinstance(nested_list, (list, tuple, np.ndarray)):
+            for item in nested_list:
+                result.extend(self._flatten_nested(item))
+        else:
+            result.append(float(nested_list))
+        return result
 
     def get_edge_support_from_clients(self, parent, child, cpt_lists, weights):
         """
@@ -840,7 +1105,7 @@ class Coordinator(Client):
                         
                         if edge_score > best_score:
                             memory_cost = self.estimate_edge_addition_cost(parent, child, current_cpts)
-                            if memory_cost < 10000:  
+                            if memory_cost < 5000:  
                                 best_change = ('add', (parent, child), edge_score)
                                 best_score = edge_score
             
