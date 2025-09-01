@@ -829,7 +829,7 @@ class Coordinator(Client):
             for parent in all_variables:
                 for child in all_variables:
                     if parent != child and (parent, child) not in current_edges:
-                        if self.would_create_cycle(parent, child, current_edges):
+                        if self.cyclicity_check(parent, child, current_edges):
                             continue
                         
                         child_cpt = next((c for c in current_cpts if c['variable'] == child), None)

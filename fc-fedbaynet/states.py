@@ -132,15 +132,13 @@ class ReadInputState(AppState):
         with open(config_path) as f:
             config_file = yaml.load(f, Loader=yaml.FullLoader)
 
-        config = config_file['fc_fedbaynet_prox']
+        config = config_file['fc_fedbaynet']
         self.store('dataset', config['input']['dataset_loc'])
         self.store('bwlists', config['input']['bwlists_loc'])
         self.store('split_mode', config['split']['mode'])
         self.store('split_dir', config['split']['dir']) 
         self.store('max_iterations', config['max_iterations'])
         self.store('cv_folds', config['cv_folds'])
-        self.store('mu', config['fedprox']['mu'])
-        self.store('epochs', config['fedprox']['epochs'])
 
         self.store('sim_thresh', config['network_fusion']['sim_thresh'])
         self.store('expert_weight', config['network_fusion']['expert_weight'])
