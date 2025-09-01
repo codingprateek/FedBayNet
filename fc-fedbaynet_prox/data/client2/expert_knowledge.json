@@ -1,35 +1,3 @@
-{
-  "whitelist": [
-    ["bp_diastolic", "bp_limit"],
-    ["al", "pc"],
-    ["pc", "pe"],
-    ["pc", "pcc"],
-    ["class", "dm"],
-    ["class", "hemo"],
-    ["class", "sg"],
-    ["class", "pcv"],
-    ["class", "al"],
-    ["htn", "stage"],
-    ["htn", "sc"],
-    ["htn", "appet"],
-    ["stage", "class"],
-    ["cad", "htn"],
-    ["class", "grf"],
-    ["class", "sod"],
-    ["dm", "pe"],
-    ["dm", "rbcc"],
-    ["rbc", "ane"],
-    ["pe", "appet"],
-    ["bu", "rbc"]
-    ],
-
-  "blacklist": [
-    ["grf", "class"],
-    ["sod", "class"],
-    ["pe", "dm"],
-    ["rbcc", "dm"],
-    ["ane", "rbc"],
-    ["appet", "pe"],
-    ["rbc", "bu"]
-  ]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:15d65eaef6950185926d1759923777dcfda615a4b2a95e34dd3a86cca7d9ab28
+size 636
