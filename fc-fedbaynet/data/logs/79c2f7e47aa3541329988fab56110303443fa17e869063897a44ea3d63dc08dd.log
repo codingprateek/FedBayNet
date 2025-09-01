@@ -1,0 +1,3347 @@
+2025-09-01 19:38:58,153 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-09-01 19:38:58,154 INFO supervisord started with pid 7
+2025-09-01 19:38:59,156 INFO spawned: 'app' with pid 8
+2025-09-01 19:38:59,158 INFO spawned: 'nginx' with pid 9
+2025-09-01 19:39:00,174 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-09-01 19:39:00,174 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+[CTRL] POST /setup
+[Time: 01.09.25 19:39:25] [Level: info] id: f7f691b4dcd35785
+[Time: 01.09.25 19:39:25] [Level: info] coordinator: True
+[Time: 01.09.25 19:39:25] [Level: info] clients: ['84d56387b02813a0', 'f7f691b4dcd35785', '92e3eee07ba665f0']
+[Time: 01.09.25 19:39:25] [Level: info] state: initial
+[Time: 01.09.25 19:39:25] [Level: info] [State: initial] [CLIENT] Starting FedBayNet...
+[Time: 01.09.25 19:39:25] [Level: info] [State: initial] [CLIENT] Node ID: f7f691b4dcd35785, Coordinator: True
+[Time: 01.09.25 19:39:25] [Level: info] [State: initial] Initial to Read Input
+[Time: 01.09.25 19:39:25] [Level: info] transition: read input
+[Time: 01.09.25 19:39:26] [Level: info] state: read input
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] [CLIENT] Reading dataset and configuration...
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] Read Input to Local Computation
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] [CLIENT] Configuration Loaded Successfully
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] [CLIENT] Loaded dataset from /mnt/input: 114 records and 28 variables
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] [CLIENT] Comparing Client ID 'f7f691b4dcd35785' with split directory 'input'
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] [CLIENT] Using split directory: /mnt/input
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] BLACKLIST: [('pe', 'class'), ('cad', 'class'), ('sod', 'class'), ('dm', 'class'), ('pc', 'al'), ('pcc', 'pc'), ('ba', 'pc'), ('rbc', 'pc')]
+[Time: 01.09.25 19:39:26] [Level: info] [State: read input] WHITELIST: [('bp_limit', 'bp_diastolic'), ('sg', 'class'), ('class', 'stage'), ('class', 'hemo'), ('class', 'htn'), ('class', 'rbcc'), ('class', 'pcv'), ('class', 'al'), ('class', 'bp_limit'), ('class', 'appet'), ('stage', 'grf'), ('stage', 'sc'), ('stage', 'ane'), ('htn', 'dm'), ('htn', 'bu'), ('dm', 'bgr'), ('dm', 'su'), ('class', 'pe'), ('class', 'cad'), ('class', 'sod'), ('class', 'dm'), ('al', 'pc'), ('pc', 'pcc'), ('pc', 'ba'), ('pc', 'rbc')]
+[Time: 01.09.25 19:39:26] [Level: info] transition: local computation
+[Time: 01.09.25 19:39:27] [Level: info] state: local computation
+[Time: 01.09.25 19:39:27] [Level: info] [State: local computation] [CLIENT] Initializing FedBayNet...
+[Time: 01.09.25 19:39:27] [Level: info] [State: local computation] [CLIENT] Sharing expert knowledge with the coordinator.
+  0%|          | 0/5 [00:00<?, ?it/s]Working for n conditional variables: 0:   0%|          | 0/5 [00:00<?, ?it/s]Working for n conditional variables: 0:  20%|██        | 1/5 [00:01<00:04,  1.11s/it]Working for n conditional variables: 1:  20%|██        | 1/5 [00:01<00:04,  1.11s/it]Working for n conditional variables: 1:  40%|████      | 2/5 [00:02<00:04,  1.46s/it]Working for n conditional variables: 2:  40%|████      | 2/5 [00:02<00:04,  1.46s/it]Working for n conditional variables: 2:  60%|██████    | 3/5 [00:02<00:01,  1.15it/s]Working for n conditional variables: 3:  60%|██████    | 3/5 [00:02<00:01,  1.15it/s]Working for n conditional variables: 3:  60%|██████    | 3/5 [00:02<00:01,  1.01it/s]
+PC algorithm completed successfully
+Hill Climbing algorithm completed successfully
+  0%|          | 0/1000000 [00:00<?, ?it/s]  0%|          | 1/1000000 [00:01<392:40:09,  1.41s/it]  0%|          | 3/1000000 [00:01<117:45:50,  2.36it/s]  0%|          | 5/1000000 [00:01<67:19:26,  4.13it/s]   0%|          | 7/1000000 [00:01<47:21:20,  5.87it/s]  0%|          | 9/1000000 [00:01<36:53:05,  7.53it/s]  0%|          | 11/1000000 [00:02<29:29:04,  9.42it/s]  0%|          | 14/1000000 [00:02<22:39:26, 12.26it/s]  0%|          | 16/1000000 [00:02<20:07:24, 13.80it/s]  0%|          | 18/1000000 [00:02<18:20:52, 15.14it/s]  0%|          | 21/1000000 [00:02<16:38:11, 16.70it/s]  0%|          | 23/1000000 [00:02<16:23:21, 16.95it/s]  0%|          | 25/1000000 [00:02<31:54:29,  8.71it/s]
+  0%|          | 0/1000000 [00:00<?, ?it/s]  0%|          | 1/1000000 [00:02<608:17:15,  2.19s/it]  0%|          | 2/1000000 [00:02<268:33:20,  1.03it/s]  0%|          | 3/1000000 [00:02<162:36:56,  1.71it/s]  0%|          | 5/1000000 [00:06<351:59:24,  1.27s/it]  0%|          | 6/1000000 [00:06<260:57:42,  1.06it/s]  0%|          | 7/1000000 [00:06<193:45:11,  1.43it/s]  0%|          | 8/1000000 [00:06<151:43:07,  1.83it/s]  0%|          | 9/1000000 [00:06<122:43:37,  2.26it/s]  0%|          | 10/1000000 [00:06<98:31:39,  2.82it/s]  0%|          | 11/1000000 [00:06<81:03:43,  3.43it/s]  0%|          | 12/1000000 [00:07<68:46:46,  4.04it/s]  0%|          | 13/1000000 [00:07<59:50:42,  4.64it/s]  0%|          | 14/1000000 [00:07<53:21:19,  5.21it/s]  0%|          | 15/1000000 [00:07<49:00:11,  5.67it/s]  0%|          | 16/1000000 [00:07<45:16:46,  6.13it/s]  0%|          | 17/1000000 [00:07<44:37:05,  6.23it/s]  0%|          | 18/1000000 [00:07<44:24:03,  6.26it/s]  0%|          | 19/1000000 [00:08<45:00:22,  6.17it/s]  0%|          | 20/1000000 [00:08<41:07:40,  6.75it/s]  0%|          | 21/1000000 [00:08<40:23:01,  6.88it/s]  0%|          | 22/1000000 [00:08<38:43:06,  7.17it/s]  0%|          | 23/1000000 [00:08<38:30:56,  7.21it/s]  0%|          | 24/1000000 [00:08<40:28:36,  6.86it/s]  0%|          | 25/1000000 [00:08<39:46:54,  6.98it/s]  0%|          | 25/1000000 [00:09<100:26:49,  2.77it/s]
+Tabu Search algorithm completed successfully
+Building tree:   0%|          | 0/378.0 [00:00<?, ?it/s]Building tree:   4%|▍         | 16/378.0 [00:00<00:04, 80.43it/s]Building tree:   8%|▊         | 32/378.0 [00:01<00:23, 14.72it/s]Building tree:  13%|█▎        | 48/378.0 [00:02<00:13, 23.93it/s]Building tree:  17%|█▋        | 64/378.0 [00:02<00:08, 35.25it/s]Building tree:  34%|███▍      | 128/378.0 [00:02<00:02, 94.80it/s]Building tree:  51%|█████     | 192/378.0 [00:02<00:01, 164.44it/s]Building tree:  68%|██████▊   | 256/378.0 [00:02<00:00, 232.26it/s]Building tree: 100%|██████████| 378/378.0 [00:02<00:00, 145.44it/s]
+Chow-Liu Tree algorithm completed successfully
+Building tree:   0%|          | 0/378.0 [00:00<?, ?it/s]Building tree:  59%|█████▉    | 223/378.0 [00:00<00:00, 2226.96it/s]Building tree: 100%|██████████| 378/378.0 [00:00<00:00, 2414.27it/s]
+Building tree:   0%|          | 0/378.0 [00:00<?, ?it/s]Building tree:  25%|██▌       | 96/378.0 [00:00<00:00, 743.08it/s]Building tree:  59%|█████▉    | 224/378.0 [00:00<00:00, 835.75it/s]Building tree: 100%|██████████| 378/378.0 [00:00<00:00, 1102.73it/s]
+TAN (Tree Augmented Naive Bayes) algorithm completed successfully
+GES (Greedy Equivalence Search) algorithm completed successfully
+Exhaustive Search skipped: too many variables (>8)
+tabu produced duplicate structure (same as hill_climb)
+ges produced duplicate structure (same as hill_climb)
+
+Unique valid structures found: 4
+
+Evaluating structures with BIC scoring:
+--------------------------------------------------
+pc             : BIC = -4218.45 | Edges =  7 | Nodes = 28
+hill_climb     : BIC = -3049.38 | Edges = 25 | Nodes = 28
+chow_liu       : BIC = -4106.00 | Edges = 27 | Nodes = 28
+tan            : BIC = -6163.52 | Edges = 53 | Nodes = 28
+--------------------------------------------------
+BEST ALGORITHM: HILL_CLIMB
+Best BIC Score: -3049.38
+Network Structure: 28 nodes, 25 edges
+   Edges: [('bp_limit', 'bp_diastolic'), ('al', 'pc'), ('class', 'hemo'), ('class', 'sg'), ('class', 'htn'), ('class', 'rbcc'), ('class', 'pcv'), ('class', 'al'), ('class', 'bp_limit'), ('class', 'appet'), ('class', 'pe'), ('class', 'cad'), ('class', 'sod'), ('class', 'dm'), ('pc', 'pcc'), ('pc', 'ba'), ('pc', 'rbc'), ('htn', 'dm'), ('htn', 'bu'), ('dm', 'bgr'), ('dm', 'su'), ('grf', 'stage'), ('stage', 'class'), ('stage', 'sc'), ('stage', 'ane')]
+[Time: 01.09.25 19:39:48] [Level: info] transition: aggregation
+[CTRL] POST /data
+[Time: 01.09.25 19:39:49] [Level: info] state: aggregation
+[Time: 01.09.25 19:39:49] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 1
+[CTRL] POST /data
+[Time: 01.09.25 19:39:49] [Level: info] [State: aggregation] [COORDINATOR] Building network structure based on expert knowledge...
+[Time: 01.09.25 19:39:49] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_1.json
+[Time: 01.09.25 19:39:49] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 0
+[Time: 01.09.25 19:39:49] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_1.json']
+[Time: 01.09.25 19:39:49] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 2 (max iterations: 20)
+[Time: 01.09.25 19:39:49] [Level: info] transition: local computation
+[Time: 01.09.25 19:39:50] [Level: info] state: local computation
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for su
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for class
+Fold 2 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for su
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for class
+Fold 3 Accuracy: 0.9565
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for su
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for class
+Fold 4 Accuracy: 0.9565
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for su
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for class
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9304
+[Time: 01.09.25 19:39:52] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 2: 0.9304
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/global_network_iter1.png
+Network visualization saved to: /mnt/output/local_network_iter1.png
+[Time: 01.09.25 19:39:53] [Level: info] transition: aggregation
+[Time: 01.09.25 19:39:54] [Level: info] state: aggregation
+[Time: 01.09.25 19:39:54] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 2
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:39:58] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge stage->ane, consensus score: 0.1278
+Removed edge stage->sc, consensus score: 0.0925
+No beneficial changes found, stopping
+Made 2 changes, total improvement: 0.2202
+[Time: 01.09.25 19:39:58] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_2.json
+[Time: 01.09.25 19:39:58] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:39:58] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['local_network_iter1.png', 'aggregated_cpts_1.json', 'aggregated_cpts_2.json', 'global_network_iter1.png']
+[Time: 01.09.25 19:39:58] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 3 (max iterations: 20)
+[Time: 01.09.25 19:39:58] [Level: info] transition: local computation
+[Time: 01.09.25 19:39:59] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 0.9565
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9652
+[Time: 01.09.25 19:40:01] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 3: 0.9652
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/global_network_iter2.png
+Network visualization saved to: /mnt/output/local_network_iter2.png
+[Time: 01.09.25 19:40:02] [Level: info] transition: aggregation
+[Time: 01.09.25 19:40:03] [Level: info] state: aggregation
+[Time: 01.09.25 19:40:03] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 3
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:40:07] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge bp_diastolic->rbc, consensus score: 0.3960
+Removed edge dm->pe, consensus score: 0.2804
+Removed edge pc->pe, consensus score: 0.2804
+Removed edge class->pe, consensus score: 0.2150
+Removed edge pc->rbc, consensus score: 0.1738
+Made 5 changes, total improvement: 1.3456
+[Time: 01.09.25 19:40:08] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_3.json
+[Time: 01.09.25 19:40:08] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:40:08] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['local_network_iter1.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'aggregated_cpts_2.json', 'global_network_iter1.png']
+[Time: 01.09.25 19:40:08] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 4 (max iterations: 20)
+[Time: 01.09.25 19:40:08] [Level: info] transition: local computation
+[Time: 01.09.25 19:40:09] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:40:13] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 4: 0.9739
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/global_network_iter3.png
+Network visualization saved to: /mnt/output/local_network_iter3.png
+[Time: 01.09.25 19:40:14] [Level: info] transition: aggregation
+[Time: 01.09.25 19:40:15] [Level: info] state: aggregation
+[Time: 01.09.25 19:40:15] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 4
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:40:20] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge pc->appet, consensus score: 0.3823
+Removed edge htn->class, consensus score: 0.1387
+Removed edge stage->ane, consensus score: 0.1278
+Removed edge stage->sc, consensus score: 0.0925
+No beneficial changes found, stopping
+Made 4 changes, total improvement: 0.7413
+[Time: 01.09.25 19:40:20] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_4.json
+[Time: 01.09.25 19:40:20] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:40:20] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'local_network_iter1.png', 'local_network_iter3.png', 'global_network_iter3.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'aggregated_cpts_2.json', 'global_network_iter1.png']
+[Time: 01.09.25 19:40:20] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 5 (max iterations: 20)
+[Time: 01.09.25 19:40:20] [Level: info] transition: local computation
+[Time: 01.09.25 19:40:21] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:40:22] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 5: 0.9739
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/global_network_iter4.png
+Network visualization saved to: /mnt/output/local_network_iter4.png
+[Time: 01.09.25 19:40:23] [Level: info] transition: aggregation
+[Time: 01.09.25 19:40:24] [Level: info] state: aggregation
+[Time: 01.09.25 19:40:24] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 5
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:40:29] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge htn->pc, consensus score: 0.3832
+Removed edge pcc->ane, consensus score: 0.3718
+Removed edge pc->pe, consensus score: 0.3214
+Removed edge appet->pe, consensus score: 0.3214
+Removed edge class->pe, consensus score: 0.2150
+Made 5 changes, total improvement: 1.6128
+[Time: 01.09.25 19:40:29] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_5.json
+[Time: 01.09.25 19:40:29] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:40:29] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'local_network_iter1.png', 'local_network_iter3.png', 'global_network_iter3.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'aggregated_cpts_2.json', 'global_network_iter1.png', 'aggregated_cpts_5.json']
+[Time: 01.09.25 19:40:29] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 6 (max iterations: 20)
+[Time: 01.09.25 19:40:29] [Level: info] transition: local computation
+[Time: 01.09.25 19:40:30] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:40:31] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 6: 0.9739
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/global_network_iter5.png
+Network visualization saved to: /mnt/output/local_network_iter5.png
+[Time: 01.09.25 19:40:32] [Level: info] transition: aggregation
+[Time: 01.09.25 19:40:33] [Level: info] state: aggregation
+[Time: 01.09.25 19:40:33] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 6
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:40:38] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge pc->pe, consensus score: 0.3214
+Removed edge appet->pe, consensus score: 0.3214
+Removed edge ane->pcc, consensus score: 0.2437
+Removed edge pcc->pe, consensus score: 0.2398
+Removed edge cad->htn, consensus score: 0.1975
+Made 5 changes, total improvement: 1.3237
+[Time: 01.09.25 19:40:38] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_6.json
+[Time: 01.09.25 19:40:38] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:40:38] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'local_network_iter1.png', 'local_network_iter3.png', 'global_network_iter3.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json']
+[Time: 01.09.25 19:40:38] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 7 (max iterations: 20)
+[Time: 01.09.25 19:40:38] [Level: info] transition: local computation
+[Time: 01.09.25 19:40:39] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:40:40] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 7: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter6.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter6.png
+[Time: 01.09.25 19:40:41] [Level: info] transition: aggregation
+[Time: 01.09.25 19:40:45] [Level: info] state: aggregation
+[Time: 01.09.25 19:40:45] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 7
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:40:50] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge class->dm, consensus score: 0.2677
+Removed edge cad->htn, consensus score: 0.2556
+Removed edge htn->bu, consensus score: 0.2529
+Removed edge appet->ba, consensus score: 0.1814
+Made 5 changes, total improvement: 1.2410
+Skipped edge bp_diastolic -> bp_limit to avoid cycle
+[Time: 01.09.25 19:40:50] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_7.json
+[Time: 01.09.25 19:40:50] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:40:50] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter3.png', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:40:50] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 8 (max iterations: 20)
+[Time: 01.09.25 19:40:50] [Level: info] transition: local computation
+[Time: 01.09.25 19:40:51] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.7826
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 0.9565
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9478
+[Time: 01.09.25 19:40:52] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 8: 0.9478
+Network visualization saved to: /mnt/output/global_network_iter7.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter7.png
+[Time: 01.09.25 19:40:53] [Level: info] transition: aggregation
+[Time: 01.09.25 19:40:54] [Level: info] state: aggregation
+[Time: 01.09.25 19:40:54] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 8
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:40:59] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge stage->ane, consensus score: 0.3300
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge ane->stage, consensus score: 0.2067
+Removed edge class->stage, consensus score: 0.2067
+Removed edge bu->htn, consensus score: 0.1643
+Made 5 changes, total improvement: 1.1910
+Skipped edge bp_diastolic -> bp_limit to avoid cycle
+[Time: 01.09.25 19:40:59] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_8.json
+[Time: 01.09.25 19:40:59] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:40:59] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter3.png', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'local_network_iter7.png', 'global_network_iter7.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'aggregated_cpts_8.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:40:59] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 9 (max iterations: 20)
+[Time: 01.09.25 19:40:59] [Level: info] transition: local computation
+[Time: 01.09.25 19:41:00] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:41:02] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 9: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter8.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter8.png
+[Time: 01.09.25 19:41:02] [Level: info] transition: aggregation
+[Time: 01.09.25 19:41:03] [Level: info] state: aggregation
+[Time: 01.09.25 19:41:03] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 9
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:41:08] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge htn->ane, consensus score: 0.3947
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge pc->ba, consensus score: 0.2779
+Removed edge rbc->bu, consensus score: 0.2742
+Removed edge htn->dm, consensus score: 0.2108
+Made 5 changes, total improvement: 1.4409
+Skipped edge bp_diastolic -> bp_limit to avoid cycle
+[Time: 01.09.25 19:41:08] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_9.json
+[Time: 01.09.25 19:41:08] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:41:08] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter3.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'aggregated_cpts_8.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:41:08] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 10 (max iterations: 20)
+[Time: 01.09.25 19:41:08] [Level: info] transition: local computation
+[Time: 01.09.25 19:41:09] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:41:10] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 10: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter9.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter9.png
+[Time: 01.09.25 19:41:11] [Level: info] transition: aggregation
+[Time: 01.09.25 19:41:12] [Level: info] state: aggregation
+[Time: 01.09.25 19:41:12] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 10
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:41:21] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge stage->ane, consensus score: 0.3300
+Removed edge ba->pc, consensus score: 0.2837
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge ane->stage, consensus score: 0.1812
+Made 5 changes, total improvement: 1.2831
+Skipped edge bp_diastolic -> bp_limit to avoid cycle
+[Time: 01.09.25 19:41:21] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_10.json
+[Time: 01.09.25 19:41:21] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:41:21] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter9.png', 'local_network_iter3.png', 'aggregated_cpts_10.json', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'aggregated_cpts_8.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:41:21] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 11 (max iterations: 20)
+[Time: 01.09.25 19:41:21] [Level: info] transition: local computation
+[Time: 01.09.25 19:41:22] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:41:23] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 11: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter10.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter10.png
+[Time: 01.09.25 19:41:24] [Level: info] transition: aggregation
+[Time: 01.09.25 19:41:25] [Level: info] state: aggregation
+[Time: 01.09.25 19:41:25] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 11
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:41:30] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge htn->ane, consensus score: 0.3947
+Removed edge bu->htn, consensus score: 0.3655
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge pc->ba, consensus score: 0.1656
+Made 5 changes, total improvement: 1.4140
+Skipped edge bp_diastolic -> bp_limit to avoid cycle
+[Time: 01.09.25 19:41:30] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_11.json
+[Time: 01.09.25 19:41:30] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:41:30] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter9.png', 'local_network_iter3.png', 'aggregated_cpts_10.json', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'aggregated_cpts_11.json', 'local_network_iter2.png', 'global_network_iter4.png', 'local_network_iter4.png', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'aggregated_cpts_8.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:41:30] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 12 (max iterations: 20)
+[Time: 01.09.25 19:41:30] [Level: info] transition: local computation
+[Time: 01.09.25 19:41:31] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:41:32] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 12: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter11.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter11.png
+[Time: 01.09.25 19:41:33] [Level: info] transition: aggregation
+[Time: 01.09.25 19:41:34] [Level: info] state: aggregation
+[Time: 01.09.25 19:41:34] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 12
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:41:39] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge stage->ane, consensus score: 0.3300
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge rbc->bu, consensus score: 0.2742
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge htn->bu, consensus score: 0.1845
+Made 5 changes, total improvement: 1.2769
+Skipped edge bp_diastolic -> bp_limit to avoid cycle
+[Time: 01.09.25 19:41:39] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_12.json
+[Time: 01.09.25 19:41:39] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:41:39] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter9.png', 'local_network_iter3.png', 'aggregated_cpts_10.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'aggregated_cpts_11.json', 'local_network_iter2.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'aggregated_cpts_8.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:41:39] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 13 (max iterations: 20)
+[Time: 01.09.25 19:41:39] [Level: info] transition: local computation
+[Time: 01.09.25 19:41:40] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:41:41] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 13: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter12.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter12.png
+[Time: 01.09.25 19:41:42] [Level: info] transition: aggregation
+[Time: 01.09.25 19:41:43] [Level: info] state: aggregation
+[Time: 01.09.25 19:41:43] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 13
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:41:47] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge rbc->bu, consensus score: 0.2742
+Removed edge stage->htn, consensus score: 0.2556
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge htn->bu, consensus score: 0.1845
+Removed edge bp_limit->bp_diastolic, consensus score: 0.1625
+Made 5 changes, total improvement: 1.0815
+[Time: 01.09.25 19:41:48] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_13.json
+[Time: 01.09.25 19:41:48] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:41:48] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'local_network_iter9.png', 'local_network_iter3.png', 'aggregated_cpts_10.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter2.png', 'aggregated_cpts_13.json', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'aggregated_cpts_8.json', 'local_network_iter6.png']
+[Time: 01.09.25 19:41:48] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 14 (max iterations: 20)
+[Time: 01.09.25 19:41:48] [Level: info] transition: local computation
+[CTRL] GET /data
+[Time: 01.09.25 19:41:52] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:41:53] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 14: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter13.png
+Network visualization saved to: /mnt/output/local_network_iter13.png
+[Time: 01.09.25 19:41:54] [Level: info] transition: aggregation
+[Time: 01.09.25 19:41:55] [Level: info] state: aggregation
+[Time: 01.09.25 19:41:55] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 14
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:41:57] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge htn->stage, consensus score: 0.2989
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge rbc->bu, consensus score: 0.2742
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge htn->bu, consensus score: 0.1845
+Made 5 changes, total improvement: 1.2457
+[Time: 01.09.25 19:41:57] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_14.json
+[Time: 01.09.25 19:41:57] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:41:57] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'local_network_iter9.png', 'local_network_iter3.png', 'aggregated_cpts_10.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter2.png', 'local_network_iter13.png', 'aggregated_cpts_13.json', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:41:57] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 15 (max iterations: 20)
+[Time: 01.09.25 19:41:57] [Level: info] transition: local computation
+[CTRL] GET /data
+[Time: 01.09.25 19:41:58] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:42:00] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 15: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter14.png
+Network visualization saved to: /mnt/output/local_network_iter14.png
+[Time: 01.09.25 19:42:00] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:01] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:01] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 15
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:03] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge pc->ba, consensus score: 0.2779
+Removed edge rbc->bu, consensus score: 0.2742
+Removed edge pc->rbc, consensus score: 0.2521
+Removed edge htn->dm, consensus score: 0.2048
+Made 5 changes, total improvement: 1.2923
+[Time: 01.09.25 19:42:03] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_15.json
+[Time: 01.09.25 19:42:03] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:03] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'local_network_iter9.png', 'local_network_iter3.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter2.png', 'local_network_iter13.png', 'aggregated_cpts_13.json', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:03] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 16 (max iterations: 20)
+[Time: 01.09.25 19:42:03] [Level: info] transition: local computation
+[Time: 01.09.25 19:42:04] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:42:05] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 16: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter15.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter15.png
+[Time: 01.09.25 19:42:06] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:07] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:07] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 16
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:12] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge al->pc, consensus score: 0.3575
+Removed edge ba->pc, consensus score: 0.2837
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge pc->al, consensus score: 0.2042
+Made 5 changes, total improvement: 1.3336
+Skipped edge class -> stage to avoid cycle
+[Time: 01.09.25 19:42:12] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_16.json
+[Time: 01.09.25 19:42:12] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:12] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'local_network_iter9.png', 'local_network_iter3.png', 'local_network_iter15.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter2.png', 'local_network_iter13.png', 'aggregated_cpts_13.json', 'global_network_iter15.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'aggregated_cpts_16.json', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:12] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 17 (max iterations: 20)
+[Time: 01.09.25 19:42:12] [Level: info] transition: local computation
+[Time: 01.09.25 19:42:13] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:42:15] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 17: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter16.png
+[CTRL] GET /data
+Network visualization saved to: /mnt/output/local_network_iter16.png
+[Time: 01.09.25 19:42:15] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:16] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:16] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 17
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:21] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge htn->pc, consensus score: 0.3832
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge pc->rbc, consensus score: 0.1738
+Removed edge pc->ba, consensus score: 0.1656
+Made 5 changes, total improvement: 1.2108
+Skipped edge class -> stage to avoid cycle
+[Time: 01.09.25 19:42:21] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_17.json
+[Time: 01.09.25 19:42:21] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:21] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'local_network_iter9.png', 'local_network_iter3.png', 'local_network_iter15.png', 'global_network_iter16.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_17.json', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter16.png', 'local_network_iter2.png', 'local_network_iter13.png', 'aggregated_cpts_13.json', 'global_network_iter15.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'aggregated_cpts_16.json', 'global_network_iter1.png', 'local_network_iter5.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:21] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 18 (max iterations: 20)
+[Time: 01.09.25 19:42:21] [Level: info] transition: local computation
+[CTRL] GET /data
+[Time: 01.09.25 19:42:25] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:42:27] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 18: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter17.png
+Network visualization saved to: /mnt/output/local_network_iter17.png
+[Time: 01.09.25 19:42:28] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:29] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:29] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 18
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:30] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge stage->ane, consensus score: 0.3300
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge ane->stage, consensus score: 0.1983
+Removed edge class->stage, consensus score: 0.1983
+Made 5 changes, total improvement: 1.2148
+[Time: 01.09.25 19:42:31] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_18.json
+[Time: 01.09.25 19:42:31] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:31] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'aggregated_cpts_18.json', 'local_network_iter9.png', 'local_network_iter3.png', 'local_network_iter15.png', 'global_network_iter16.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'local_network_iter17.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_17.json', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter16.png', 'local_network_iter2.png', 'local_network_iter13.png', 'aggregated_cpts_13.json', 'global_network_iter15.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'aggregated_cpts_16.json', 'global_network_iter1.png', 'local_network_iter5.png', 'global_network_iter17.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:31] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 19 (max iterations: 20)
+[Time: 01.09.25 19:42:31] [Level: info] transition: local computation
+[CTRL] GET /data
+[Time: 01.09.25 19:42:32] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+[Time: 01.09.25 19:42:33] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 19: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter18.png
+Network visualization saved to: /mnt/output/local_network_iter18.png
+[Time: 01.09.25 19:42:34] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:35] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:35] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 19
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:36] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge htn->ane, consensus score: 0.3947
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge pc->ba, consensus score: 0.2779
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge ba->pc, consensus score: 0.1902
+Made 5 changes, total improvement: 1.3510
+Skipped edge class -> stage to avoid cycle
+Created uniform distribution for stage
+[Time: 01.09.25 19:42:36] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_19.json
+[Time: 01.09.25 19:42:36] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:36] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'aggregated_cpts_18.json', 'local_network_iter9.png', 'local_network_iter3.png', 'local_network_iter15.png', 'global_network_iter16.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'local_network_iter17.png', 'global_network_iter18.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_17.json', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter16.png', 'local_network_iter2.png', 'local_network_iter13.png', 'aggregated_cpts_13.json', 'local_network_iter18.png', 'global_network_iter15.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'aggregated_cpts_16.json', 'aggregated_cpts_19.json', 'global_network_iter1.png', 'local_network_iter5.png', 'global_network_iter17.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:36] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 20 (max iterations: 20)
+[Time: 01.09.25 19:42:36] [Level: info] transition: local computation
+[CTRL] GET /data
+[Time: 01.09.25 19:42:37] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 0.9565
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9652
+[Time: 01.09.25 19:42:39] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 20: 0.9652
+Network visualization saved to: /mnt/output/global_network_iter19.png
+Network visualization saved to: /mnt/output/local_network_iter19.png
+[Time: 01.09.25 19:42:40] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:41] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:41] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 20
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:42] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge pc->rbc, consensus score: 0.2521
+Removed edge class->appet, consensus score: 0.2147
+Removed edge htn->dm, consensus score: 0.2048
+Removed edge pc->ba, consensus score: 0.1656
+Made 5 changes, total improvement: 1.1205
+[Time: 01.09.25 19:42:43] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_20.json
+[Time: 01.09.25 19:42:43] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:43] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'aggregated_cpts_18.json', 'local_network_iter9.png', 'local_network_iter3.png', 'local_network_iter15.png', 'global_network_iter16.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'local_network_iter17.png', 'global_network_iter18.png', 'aggregated_cpts_1.json', 'global_network_iter2.png', 'aggregated_cpts_17.json', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter16.png', 'local_network_iter2.png', 'local_network_iter13.png', 'global_network_iter19.png', 'aggregated_cpts_13.json', 'local_network_iter18.png', 'global_network_iter15.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'aggregated_cpts_16.json', 'aggregated_cpts_19.json', 'aggregated_cpts_20.json', 'global_network_iter1.png', 'local_network_iter5.png', 'global_network_iter17.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'local_network_iter19.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:43] [Level: info] [State: aggregation] [COORDINATOR] Broadcasting for iteration 21 (max iterations: 20)
+[Time: 01.09.25 19:42:43] [Level: info] transition: local computation
+[CTRL] GET /data
+[Time: 01.09.25 19:42:44] [Level: info] state: local computation
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 1 Accuracy: 0.8696
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 2 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 3 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 4 Accuracy: 1.0000
+WARNING:pgmpy:Replacing existing CPD for al
+WARNING:pgmpy:Replacing existing CPD for class
+WARNING:pgmpy:Replacing existing CPD for ane
+WARNING:pgmpy:Replacing existing CPD for stage
+WARNING:pgmpy:Replacing existing CPD for appet
+WARNING:pgmpy:Replacing existing CPD for ba
+WARNING:pgmpy:Replacing existing CPD for bgr
+WARNING:pgmpy:Replacing existing CPD for dm
+WARNING:pgmpy:Replacing existing CPD for bp_diastolic
+WARNING:pgmpy:Replacing existing CPD for bp_limit
+WARNING:pgmpy:Replacing existing CPD for bu
+WARNING:pgmpy:Replacing existing CPD for htn
+WARNING:pgmpy:Replacing existing CPD for cad
+WARNING:pgmpy:Replacing existing CPD for grf
+WARNING:pgmpy:Replacing existing CPD for hemo
+WARNING:pgmpy:Replacing existing CPD for pc
+WARNING:pgmpy:Replacing existing CPD for rbc
+WARNING:pgmpy:Replacing existing CPD for pcc
+WARNING:pgmpy:Replacing existing CPD for pcv
+WARNING:pgmpy:Replacing existing CPD for pe
+WARNING:pgmpy:Replacing existing CPD for rbcc
+WARNING:pgmpy:Replacing existing CPD for sc
+WARNING:pgmpy:Replacing existing CPD for sg
+WARNING:pgmpy:Replacing existing CPD for sod
+WARNING:pgmpy:Replacing existing CPD for su
+Fold 5 Accuracy: 1.0000
+Average Accuracy across all folds: 0.9739
+CSV saved as '/mnt/output/results.csv' with predicted class and confidence.
+[Time: 01.09.25 19:42:45] [Level: info] [State: local computation] [CLIENT] Final results saved to /mnt/output/results.csv
+[Time: 01.09.25 19:42:45] [Level: info] [State: local computation] [CLIENT] Average Accuracy for Global Network 21: 0.9739
+Network visualization saved to: /mnt/output/global_network_iter20.png
+Network visualization saved to: /mnt/output/local_network_iter20.png
+[Time: 01.09.25 19:42:46] [Level: info] transition: aggregation
+[Time: 01.09.25 19:42:47] [Level: info] state: aggregation
+[Time: 01.09.25 19:42:47] [Level: info] [State: aggregation] [COORDINATOR] Aggregating iteration 21
+[CTRL] POST /data
+[CTRL] POST /data
+[Time: 01.09.25 19:42:48] [Level: info] [State: aggregation] [COORDINATOR] Aggregating CPTs and building global network structure...
+Starting consensus-based learning with 25 variables (threshold: 0.6)
+Removed edge appet->pe, consensus score: 0.2834
+Removed edge pc->ba, consensus score: 0.1656
+Removed edge stage->sc, consensus score: 0.0925
+Removed edge stage->grf, consensus score: 0.0925
+No beneficial changes found, stopping
+Made 4 changes, total improvement: 0.6339
+[Time: 01.09.25 19:42:49] [Level: info] [State: aggregation] [DEBUG] Saved CPTs to: /mnt/output/aggregated_cpts_21.json
+[Time: 01.09.25 19:42:49] [Level: info] [State: aggregation] [DEBUG] Aggregated CPT count: 25
+[Time: 01.09.25 19:42:49] [Level: info] [State: aggregation] [DEBUG] Output dir contents: ['aggregated_cpts_4.json', 'aggregated_cpts_21.json', 'global_network_iter12.png', 'global_network_iter10.png', 'aggregated_cpts_7.json', 'local_network_iter1.png', 'aggregated_cpts_14.json', 'aggregated_cpts_18.json', 'local_network_iter9.png', 'local_network_iter3.png', 'local_network_iter15.png', 'global_network_iter16.png', 'aggregated_cpts_10.json', 'aggregated_cpts_15.json', 'local_network_iter11.png', 'aggregated_cpts_9.json', 'global_network_iter3.png', 'global_network_iter14.png', 'global_network_iter6.png', 'local_network_iter17.png', 'global_network_iter18.png', 'aggregated_cpts_1.json', 'global_network_iter20.png', 'global_network_iter2.png', 'aggregated_cpts_17.json', 'global_network_iter8.png', 'aggregated_cpts_3.json', 'local_network_iter12.png', 'aggregated_cpts_11.json', 'local_network_iter16.png', 'local_network_iter2.png', 'local_network_iter13.png', 'global_network_iter19.png', 'aggregated_cpts_13.json', 'local_network_iter18.png', 'global_network_iter15.png', 'global_network_iter4.png', 'global_network_iter11.png', 'local_network_iter4.png', 'aggregated_cpts_12.json', 'global_network_iter9.png', 'results.csv', 'local_network_iter7.png', 'global_network_iter7.png', 'local_network_iter8.png', 'aggregated_cpts_6.json', 'aggregated_cpts_2.json', 'global_network_iter5.png', 'aggregated_cpts_16.json', 'aggregated_cpts_19.json', 'aggregated_cpts_20.json', 'global_network_iter1.png', 'local_network_iter5.png', 'global_network_iter17.png', 'aggregated_cpts_5.json', 'local_network_iter10.png', 'local_network_iter14.png', 'local_network_iter19.png', 'local_network_iter20.png', 'aggregated_cpts_8.json', 'global_network_iter13.png', 'local_network_iter6.png']
+[Time: 01.09.25 19:42:49] [Level: info] [State: aggregation] [COORDINATOR] Completed after 21 iterations (max iterations: 20)
+[Time: 01.09.25 19:42:49] [Level: info] transition: final
+[CTRL] GET /data
+[Time: 01.09.25 19:42:50] [Level: info] state: final
+[Time: 01.09.25 19:42:50] [Level: info] [State: final] Learning Complete
+[Time: 01.09.25 19:42:50] [Level: info] [State: final] [FINAL] Accuracy trend saved to /mnt/output/accuracy_trend.png
+[Time: 01.09.25 19:42:50] [Level: info] transition: terminal
