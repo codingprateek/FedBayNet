@@ -9,11 +9,19 @@ fc_fedbaynet_prox:
   max_iterations: 20
   cv_folds: 5
   fedprox:
-    mu: 0.8
-    epochs: 50
+    mu: 0.7            # Higher mu = stronger regularization toward global model (more stability)
+    epochs: 20        # Higher epochs = more local training per round (better local fit)
+    lr: 0.05          # Higher lr = faster local updates (but less stability)
   network_fusion:
-    sim_thresh: 0.3
-    expert_weight: 0.6
+    expert_weight: 0.6          # Higher weight = more trust in expert network vs data-driven network
+    add_node_threshold: 0.4     # Lower threshold = easier to add new variables to network
+    add_edge_threshold: 0.3     # Lower threshold = easier to add new connections between variables
+    reverse_edge_threshold: 0.5 # Lower threshold = easier to flip edge directions based on data
+    remove_edge_threshold: 0.4  # Lower threshold = easier to remove weak connections
+    max_changes_fusion: 10      # Higher limit = allows more structural changes per fusion step
   consensus_params:
-    consensus_thresh: 0.6
-    max_changes: 5 # FedGES
+    addition_threshold: 0.4     # Lower threshold = requires less client agreement to add edges
+    removal_threshold: 0.6      # Higher threshold = requires more client agreement to remove edges
+    reversal_threshold: 0.4     # Lower threshold = requires less client agreement to reverse edges
+    node_addition_threshold: 0.4 # Lower threshold = requires less client agreement to add variables
+    max_changes: 12             # Higher limit = allows more structural updates per iteration

@@ -139,14 +139,24 @@ class ReadInputState(AppState):
         self.store('split_dir', config['split']['dir']) 
         self.store('max_iterations', config['max_iterations'])
         self.store('cv_folds', config['cv_folds'])
+
         self.store('mu', config['fedprox']['mu'])
         self.store('epochs', config['fedprox']['epochs'])
+        self.store('lr', config['fedprox']['lr'])
 
-        self.store('sim_thresh', config['network_fusion']['sim_thresh'])
         self.store('expert_weight', config['network_fusion']['expert_weight'])
+        self.store('add_node_threshold', config['network_fusion']['add_node_threshold'])
+        self.store('add_edge_threshold', config['network_fusion']['add_edge_threshold'])
+        self.store('reverse_edge_threshold', config['network_fusion']['reverse_edge_threshold'])
+        self.store('remove_edge_threshold', config['network_fusion']['remove_edge_threshold'])
+        self.store('max_changes_fusion', config['network_fusion']['max_changes_fusion'])
 
-        self.store('consensus_thresh', config['consensus_params']['consensus_thresh'])
+        self.store('addition_threshold', config['consensus_params']['addition_threshold'])
+        self.store('removal_threshold', config['consensus_params']['removal_threshold'])
+        self.store('reversal_threshold', config['consensus_params']['reversal_threshold'])
+        self.store('node_addition_threshold', config['consensus_params']['node_addition_threshold'])
         self.store('max_changes', config['consensus_params']['max_changes'])
+
         
         splits = {}
         if self.load('split_mode') == "directory":
@@ -192,10 +202,16 @@ class LocalComputationState(AppState):
         dataset = self.load('dataset')
         blacklist = self.load('blacklist')
         whitelist = self.load('whitelist')
-        sim_thresh = self.load('sim_thresh')
         expert_weight = self.load('expert_weight')
+        add_node_threshold = self.load('add_node_threshold')
+        add_edge_threshold = self.load('add_edge_threshold')
+        reverse_edge_threshold = self.load('reverse_edge_threshold')
+        remove_edge_threshold = self.load('remove_edge_threshold')
+        max_changes_fusion = self.load('max_changes_fusion')
+
         mu = self.load('mu')
         epochs = self.load('epochs')
+        lr = self.load('lr')
         
         participant = Coordinator() if self.is_coordinator else Client()
 
@@ -218,10 +234,16 @@ class LocalComputationState(AppState):
                 aggregated_cpts = self.load("aggregated_cpts_client")
             
             initial_local_network = self.load('initial_local_network')
-            client_network = participant.fuse_bayesian_networks(global_network, initial_local_network, dataset, similarity_threshold=sim_thresh, expert_weight=expert_weight)
+            client_network = participant.fuse_bayesian_networks(global_network, initial_local_network, dataset, 
+                                                                expert_weight=expert_weight, 
+                                                                add_node_threshold=add_node_threshold, 
+                                                                add_edge_threshold=add_edge_threshold, 
+                                                                reverse_edge_threshold=reverse_edge_threshold, 
+                                                                remove_edge_threshold=remove_edge_threshold,
+                                                                max_changes = max_changes_fusion)
 
             local_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
-            client_cpts = participant.fedprox_local_update(local_cpts, aggregated_cpts, dataset, mu=mu, epochs=epochs)
+            client_cpts = participant.fedprox_local_update(local_cpts, aggregated_cpts, dataset, mu=mu, epochs=epochs, lr=lr)
 
             if iteration > max_iterations:
                 results_path = os.path.join(output_dir, "results.csv")
@@ -288,7 +310,10 @@ class AggregateState(AppState):
         output_dir = "/mnt/output"
         iteration = self.load('iteration')
         max_iterations = self.load('max_iterations')
-        consensus_thresh = self.load('consensus_thresh')
+        addition_threshold = self.load('addition_threshold')
+        removal_threshold = self.load('removal_threshold')
+        reversal_threshold = self.load('reversal_threshold')
+        node_addition_threshold = self.load('node_addition_threshold')
         max_changes = self.load('max_changes')
 
         self.log(f"[COORDINATOR] Aggregating iteration {iteration}")
@@ -307,7 +332,15 @@ class AggregateState(AppState):
             self.log("[COORDINATOR] Aggregating CPTs and building global network structure...")
             clients_cpts = [payload["client_cpts"] for payload in client_payload]
             dataset_sizes = [payload["dataset_size"] for payload in client_payload]
-            aggregated_cpts = coordinator.learn_parameters(clients_cpts, dataset_sizes, max_changes=max_changes, consensus_threshold=consensus_thresh)
+            aggregated_cpts = coordinator.learn_parameters(
+                                clients_cpts, 
+                                dataset_sizes, 
+                                max_changes=max_changes, 
+                                addition_threshold=addition_threshold,
+                                removal_threshold=removal_threshold, 
+                                reversal_threshold=reversal_threshold,
+                                node_addition_threshold=node_addition_threshold
+                            )
             global_network = coordinator.build_model_from_cpts(aggregated_cpts)
 
         self.store("aggregated_cpts", aggregated_cpts)
@@ -383,9 +416,8 @@ class FinalState(AppState):
 
         plt.figure(figsize=(8, 5))
         plt.plot(iterations, accs, marker='o', linestyle='-', color='#22666F')
-        plt.title("Average Accuracy Across Federated Iterations")
         plt.xlabel("Iteration")
-        plt.ylabel("Average Accuracy (%)")
+        plt.ylabel("Average accuracy")
         plt.xticks(np.arange(0, len(accs) + 1, 1))
         plt.ylim(0.5, 1)
         plt.yticks(np.arange(0.5, 1.05, 0.1))
