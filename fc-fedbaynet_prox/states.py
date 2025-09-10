@@ -247,10 +247,10 @@ class LocalComputationState(AppState):
 
             if iteration > max_iterations:
                 results_path = os.path.join(output_dir, "results.csv")
-                avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=results_path)
+                avg_acc = participant.kfold_cv(dataset, global_network, csv_filename=results_path)
                 self.log(f"[CLIENT] Final results saved to {results_path}")
             else:
-                avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=None)
+                avg_acc = participant.kfold_cv(dataset, global_network, csv_filename=None)
                 
             self.log(f"[CLIENT] Average Accuracy for Global Network {iteration}: {avg_acc}")
             
@@ -412,18 +412,80 @@ class FinalState(AppState):
     def plot_accuracy(self, accs, output_dir, filename="accuracy_trend.png"):
         os.makedirs(output_dir, exist_ok=True)
 
+        if not accs or len(accs) == 0:
+            print("No accuracy data to plot")
+            return None
+        
+        accs = np.clip(accs, 0.0, 1.0)
         iterations = np.arange(1, len(accs) + 1)
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(iterations, accs, marker='o', linestyle='-', color='#22666F')
-        plt.xlabel("Iteration")
-        plt.ylabel("Average accuracy")
-        plt.xticks(np.arange(0, len(accs) + 1, 1))
-        plt.ylim(0.5, 1)
-        plt.yticks(np.arange(0.5, 1.05, 0.1))
+        plt.figure(figsize=(10, 6))
+        
+        plt.plot(iterations, accs, marker='o', linestyle='-', 
+                color='#22666F', linewidth=2, markersize=6, 
+                markerfacecolor='#22666F', markeredgecolor='white', 
+                markeredgewidth=1)
+        
+        plt.xlabel("Iteration", fontsize=12)
+        plt.ylabel("Average Accuracy", fontsize=12)
+        
+        max_iterations = len(accs)
+        if max_iterations <= 15:
+            plt.xticks(iterations)
+        else:
+            tick_interval = max(1, max_iterations // 10)
+            tick_positions = np.arange(1, max_iterations + 1, tick_interval)
+            if max_iterations not in tick_positions:
+                tick_positions = np.append(tick_positions, max_iterations)
+            plt.xticks(tick_positions)
+        
+        min_acc = min(accs)
+        max_acc = max(accs)
+        
+        if max_acc >= 0.99:
+            plt.ylim(max(0.0, min_acc - 0.05), 1.02)
+            plt.yticks(np.arange(max(0.0, min_acc - 0.05), 1.05, 0.05))
+        elif min_acc <= 0.01:
+            plt.ylim(-0.02, max(1.0, max_acc + 0.05))
+            plt.yticks(np.arange(0.0, max(1.0, max_acc + 0.05), 0.1))
+        else:
+            buffer = (max_acc - min_acc) * 0.1 + 0.02
+            plt.ylim(max(0.0, min_acc - buffer), min(1.02, max_acc + buffer))
+            plt.yticks(np.arange(0.0, 1.05, 0.1))
+        
+        plt.grid(True, alpha=0.3, linestyle='--')
+        
+        if len(accs) <= 15:
+            for i, acc in enumerate(accs):
+                if i == 0 or i == len(accs) - 1 or acc >= 0.99 or acc <= 0.01:
+                    plt.annotate(f'{acc:.3f}', 
+                            (iterations[i], acc),
+                            textcoords="offset points", 
+                            xytext=(0, 10), 
+                            ha='center',
+                            fontsize=9,
+                            bbox=dict(boxstyle='round,pad=0.3', 
+                                    facecolor='yellow', 
+                                    alpha=0.7,
+                                    edgecolor='none'))
+        
+        stats_text = f'Final: {accs[-1]:.3f}\nBest: {max_acc:.3f}\nWorst: {min_acc:.3f}'
+        plt.text(0.98, 0.02, stats_text, 
+                transform=plt.gca().transAxes, 
+                verticalalignment='bottom',
+                horizontalalignment='right',
+                bbox=dict(boxstyle='round,pad=0.5', 
+                        facecolor='lightblue', 
+                        alpha=0.8),
+                fontsize=10)
+        
+        plt.tight_layout()
+        
         acc_plot_path = os.path.join(output_dir, filename)
-        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight')
+        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight', 
+                    facecolor='white', edgecolor='none')
         plt.close()
+        
         return acc_plot_path
 
     def run(self):

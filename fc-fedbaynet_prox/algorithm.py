@@ -259,83 +259,29 @@ class Client:
         return edge_weights
 
     def _calculate_dependency_strength_from_cpd(self, parent: str, child: str, cpd) -> float:
-        """
-        Best simple method: Total Variation Distance between conditional distributions.
-        
-        Measures how different P(child|parent=0) is from P(child|parent=1).
-        - If identical: dependency = 0 (parent doesn't matter)
-        - If completely different: dependency = 1 (parent fully determines child)
-        
-        Args:
-            parent: Parent variable name
-            child: Child variable name  
-            cpd: Conditional probability distribution from pgmpy
-            
-        Returns:
-            Dependency strength between 0 and 1
-        """
+        """Use mutual information instead of TV distance for better sensitivity"""
         try:
-            evidence = cpd.get_evidence() or []
-            if parent not in evidence:
-                return 0.0
-            
             values = np.array(cpd.get_values())
-            
-            if values.size == 0:
+            if values.ndim != 2:
                 return 0.0
-            if values.ndim == 1:
-                return 0.0
-            
-            if values.ndim > 2:
-                values = values.reshape(values.shape[0], -1)
-            
-            num_child_states, num_configs = values.shape
-            
-            if num_configs < 2:
-                return 0.0
-            
-            parent_idx = evidence.index(parent)
-            if hasattr(cpd, 'cardinality') and len(cpd.cardinality) > parent_idx + 1:
-                parent_card = cpd.cardinality[parent_idx + 1]
-            else:
-                parent_card = 2
-            
-            configs_per_parent = num_configs // parent_card
-            if configs_per_parent == 0:
-                return 0.0
-            
-            distributions = []
-            
-            for parent_state in range(parent_card):
-                start_idx = parent_state * configs_per_parent
-                end_idx = min(start_idx + configs_per_parent, num_configs)
                 
-                if end_idx <= start_idx:
-                    continue
-                
-                avg_dist = np.mean(values[:, start_idx:end_idx], axis=1)
-                
-                total = np.sum(avg_dist)
-                if total > 0:
-                    avg_dist = avg_dist / total
-                    distributions.append(avg_dist)
+            # Calculate mutual information
+            joint_prob = values / np.sum(values)
+            parent_marginal = np.sum(joint_prob, axis=0)
+            child_marginal = np.sum(joint_prob, axis=1)
             
-            if len(distributions) < 2:
-                return 0.0
+            mi = 0.0
+            for i in range(values.shape[0]):
+                for j in range(values.shape[1]):
+                    if joint_prob[i,j] > 1e-10:
+                        mi += joint_prob[i,j] * np.log2(
+                            joint_prob[i,j] / (child_marginal[i] * parent_marginal[j] + 1e-10)
+                        )
             
-            max_distance = 0.0
-            
-            for i in range(len(distributions)):
-                for j in range(i + 1, len(distributions)):
-                    tv_distance = 0.5 * np.sum(np.abs(distributions[i] - distributions[j]))
-                    max_distance = max(max_distance, tv_distance)
-            
-            return max_distance
+            child_entropy = -np.sum(child_marginal * np.log2(child_marginal + 1e-10))
+            return mi / (child_entropy + 1e-10) if child_entropy > 0 else 0
             
         except Exception:
-            evidence = cpd.get_evidence() or []
-            if parent in evidence:
-                return 1.0 / len(evidence)
             return 0.0
 
     def create_client_model(self, dataset: pd.DataFrame) -> DiscreteBayesianNetwork:
@@ -439,7 +385,6 @@ class Client:
             print(f"Exhaustive Search algorithm failed: {e}")
             pass
         
-        # Remove duplicate structures
         unique_structures = {}
         for name, structure in candidates.items():
             if nx.is_directed_acyclic_graph(structure):
@@ -531,29 +476,15 @@ class Client:
         return cpts_list
 
     def fedprox_local_update(self, client_cpts: List[Dict[str, Any]],
-                     global_cpts: List[Dict[str, Any]],
-                     data: pd.DataFrame,
-                     mu: float = 0.9,  
-                     lr: float = 0.1, 
-                     epochs: int = 50) -> List[Dict[str, Any]]:  
+                         global_cpts: List[Dict[str, Any]],
+                         data: pd.DataFrame,
+                         mu: float = 0.01,  
+                         lr: float = 0.01,  
+                         epochs: int = 10) -> List[Dict[str, Any]]:  
         """
-        Perform FedProx local CPT update given client data and global CPTs.
-        
-        If global_cpts is empty, the function performs standard MLE updates (mu=0).
-
-        Args:
-            client_cpts: List of dicts in CPT format (initial client CPTs)
-            global_cpts: List of dicts in the CPT format (global CPTs)
-            data: Client's local data
-            mu: FedProx proximal coefficient
-            lr: Learning rate
-            epochs: Number of gradient steps
-            
-        Returns:
-            Updated CPTs in the same dictionary format
+        Improved FedProx local CPT update with corrected proximal term implementation.
         """
         updated_cpts = []
-
         use_prox = bool(global_cpts) and mu > 0.0
 
         for cpt_idx, cpt in enumerate(client_cpts):
@@ -569,7 +500,7 @@ class Client:
                 for i, row in enumerate(parent_data):
                     config_val = 0
                     multiplier = 1
-                    for j in range(len(parents) - 1, -1, -1):  
+                    for j in range(len(parents) - 1, -1, -1):
                         parent_val = int(row[j])
                         if parent_val > 0:
                             parent_val = parent_val - 1 if parent_val > 1 else parent_val
@@ -579,13 +510,9 @@ class Client:
             else:
                 config_idx = np.zeros(len(data), dtype=int)
 
-            if parents:
-                num_configs = int(np.prod(cpt["evidence_card"]))
-            else:
-                num_configs = 1
+            num_configs = int(np.prod(cpt["evidence_card"])) if parents else 1
 
             values_array = np.array(cpt["values"])
-            
             if values_array.ndim > 2:
                 values_array = values_array.reshape(var_card, -1)
             elif values_array.ndim == 1:
@@ -603,9 +530,10 @@ class Client:
                         padding = np.ones(padding_shape) / var_card
                         values_array = np.hstack([values_array, padding])
             
-            values_array = np.clip(values_array, 1e-10, 1.0) 
-            logits = torch.log(torch.tensor(values_array, dtype=torch.float32))
-
+            values_array = np.clip(values_array, 1e-10, 1.0)
+            
+            initial_probs = torch.tensor(values_array, dtype=torch.float32, requires_grad=True)
+            
             if use_prox:
                 global_cpt = global_cpts[cpt_idx]
                 global_values = np.array(global_cpt["values"])
@@ -636,40 +564,61 @@ class Client:
                             global_values = np.hstack([global_values, padding])
                 
                 global_values = np.clip(global_values, 1e-10, 1.0)
-                global_logits = torch.log(torch.tensor(global_values, dtype=torch.float32))
+                global_probs = torch.tensor(global_values, dtype=torch.float32)
             else:
-                global_logits = torch.zeros_like(logits)
-                
-            mu_local = mu if use_prox else 0.0
+                global_probs = torch.zeros_like(initial_probs)
 
-            logits = logits.clone().detach().requires_grad_(True)
-            optimizer = torch.optim.Adam([logits], lr=lr)
-
-            target_values = data[variable].values
+            optimizer = torch.optim.SGD([initial_probs], lr=lr)
             
+            target_values = data[variable].values
             target_values = np.array([int(v) - 1 if int(v) > 0 and int(v) <= var_card else int(v) for v in target_values])
-            target_values = np.clip(target_values, 0, var_card - 1)  
+            target_values = np.clip(target_values, 0, var_card - 1)
             target = F.one_hot(torch.tensor(target_values), num_classes=var_card).float()
-
             config_idx = np.clip(config_idx, 0, num_configs - 1)
 
-            for _ in range(epochs):
+            for epoch in range(epochs):
                 optimizer.zero_grad()
-                row_logits = logits[:, config_idx].T 
-                probs = F.softmax(row_logits, dim=1)
-                nll = -torch.sum(target * torch.log(probs + 1e-10)) / len(data)
                 
-                prox = (mu_local / 2) * torch.sum((logits - global_logits)**2)
-                loss = nll + prox
-                loss.backward()
+                normalized_probs = F.softmax(initial_probs, dim=0)
+                
+                row_probs = normalized_probs[:, config_idx].T
+                
+                nll = -torch.sum(target * torch.log(row_probs + 1e-10)) / len(data)
+                
+                if use_prox and mu > 0:
+                    global_normalized = F.softmax(global_probs, dim=0)
+                    
+                    prox_term = 0
+                    for config in range(num_configs):
+                        local_dist = normalized_probs[:, config]
+                        global_dist = global_normalized[:, config]
+                        
+                        m = (local_dist + global_dist) / 2
+                        js_div = 0.5 * torch.sum(local_dist * torch.log((local_dist + 1e-10) / (m + 1e-10))) + \
+                                0.5 * torch.sum(global_dist * torch.log((global_dist + 1e-10) / (m + 1e-10)))
+                        prox_term += js_div
+                    
+                    prox_term = mu * prox_term / (num_configs * np.log(2))
+                else:
+                    prox_term = 0
+                
+                total_loss = nll + prox_term
+                total_loss.backward()
+                
+                torch.nn.utils.clip_grad_norm_([initial_probs], max_norm=1.0)
+                
                 optimizer.step()
+                
+                with torch.no_grad():
+                    initial_probs.data = torch.clamp(initial_probs.data, min=1e-10)
 
-            updated_values = F.softmax(logits.detach(), dim=0).T.tolist() 
+            final_probs = F.softmax(initial_probs.detach(), dim=0)
+            updated_values = final_probs.T.tolist()
             
             if len(updated_values) == 1:
-                updated_values = updated_values[0] 
+                updated_values = updated_values[0]
             else:
-                updated_values = np.array(updated_values).T.tolist()  
+                updated_values = np.array(updated_values).T.tolist()
 
             updated_cpt = {
                 "variable": variable,
@@ -683,7 +632,7 @@ class Client:
             updated_cpts.append(updated_cpt)
 
         return updated_cpts
-    
+
     def fuse_bayesian_networks(self, expert_bn, data_bn, data_df,
                                 expert_weight=0.7,
                                 add_node_threshold=0.6,
@@ -878,31 +827,34 @@ class Client:
 
     def measure_edge_strength_from_data(self, parent, child, network, data_df):
         """
-        Measure edge strength based on data evidence
+        Measure edge strength based on data evidence - FIXED to use cardinality[1:]
         """
         try:
             if child in network.nodes():
                 try:
                     child_cpd = network.get_cpds(child)
                     if child_cpd and parent in (child_cpd.get_evidence() or []):
-                        return self.measure_dependency_strength(parent, child, {
+                        # Convert pgmpy CPD to your dict format
+                        cpt_dict = {
                             'variable': child,
-                            'evidence': list(child_cpd.get_evidence()),
-                            'values': child_cpd.get_values()
-                        })
+                            'evidence': list(child_cpd.get_evidence() or []),
+                            'values': child_cpd.get_values(),
+                            'cardinality': list(child_cpd.cardinality)  # Use full cardinality
+                        }
+                        return self.measure_dependency_strength(parent, child, cpt_dict)
                 except:
                     pass
             
+            # Fallback to mutual information from data
             if parent in data_df.columns and child in data_df.columns:
                 return self.compute_mutual_information(parent, child, data_df)
             
             return 0.0
-            
+        
         except Exception as e:
             print(f"Error measuring edge strength {parent}->{child}: {e}")
             return 0.0
-
-
+    
     def measure_edge_support_in_data(self, parent, child, data_bn, data_df):
         """
         Measure how well an edge is supported by data evidence
@@ -1466,20 +1418,18 @@ class Coordinator(Client):
         return result
 
     def get_edge_support_from_clients(self, parent, child, cpt_lists, weights):
-        """
-        Calculate weighted consensus for an edge across clients
-        """
         total_weight = sum(weights)
-        supporting_weight = 0.0
+        weighted_support = 0.0
         
         for i, cpts in enumerate(cpt_lists):
             weight = weights[i]
-            
             child_cpt = next((c for c in cpts if c['variable'] == child), None)
+            
             if child_cpt and parent in child_cpt.get('evidence', []):
-                supporting_weight += weight
-        
-        return supporting_weight / total_weight if total_weight > 0 else 0.0
+                strength = self.measure_dependency_strength(parent, child, child_cpt)
+                weighted_support += weight * strength
+            
+        return weighted_support / total_weight if total_weight > 0 else 0.0
 
     def learn_parameters(self, cpt_lists, weights, max_changes=5, 
                      addition_threshold=0.5, removal_threshold=0.2, 
@@ -1685,7 +1635,6 @@ class Coordinator(Client):
             
             if child_cpt:
                 if parent in child_cpt['evidence']:
-                    # Measure weakness of existing edge
                     strength = self.measure_dependency_strength(parent, child, child_cpt)
                     weakness = max(0, 0.4 - strength) 
                     avg_weakness += weight * weakness
@@ -1894,17 +1843,32 @@ class Coordinator(Client):
     def measure_dependency_strength(self, parent, child, child_cpt):
         """
         Measure how strongly child depends on parent in this CPT using information gain
+        Fixed to handle missing evidence_card gracefully
         """
-        values = np.array(child_cpt['values'])
-        
-        if parent not in child_cpt['evidence']:
-            return 0.0
-        
         try:
-            parent_idx = child_cpt['evidence'].index(parent)
+            values = np.array(child_cpt['values'])
+            evidence = child_cpt.get('evidence', [])
+            
+            if parent not in evidence:
+                return 0.0
+            
+            parent_idx = evidence.index(parent)
+            
+            cardinality = child_cpt.get('cardinality', [])
+            if len(cardinality) > 1:
+                evidence_card = cardinality[1:] 
+            else:
+                evidence_card = child_cpt.get('evidence_card', [])
+                if not evidence_card and evidence:
+                    evidence_card = [2] * len(evidence)
+            
+            while len(evidence_card) <= parent_idx:
+                evidence_card.append(2) 
+                
+            parent_card = evidence_card[parent_idx]
             
             if values.ndim == 1:
-                return 0.1
+                return 0.1  
             
             if values.ndim == 2:
                 marginal_child = np.mean(values, axis=1)
@@ -1917,20 +1881,17 @@ class Coordinator(Client):
             
             conditional_entropy = 0.0
             
-            if values.ndim == 2 and len(child_cpt['evidence']) == 1:
-                parent_card = child_cpt['evidence_card'][0]
+            if values.ndim == 2 and len(evidence) == 1:
                 parent_marginal = np.mean(values, axis=0)
                 parent_marginal = parent_marginal / (np.sum(parent_marginal) + 1e-12)
                 
-                for p_val in range(parent_card):
+                for p_val in range(min(parent_card, values.shape[1])):
                     if parent_marginal[p_val] > 1e-12:
                         conditional_dist = values[:, p_val]
                         conditional_dist = conditional_dist / (np.sum(conditional_dist) + 1e-12)
                         cond_ent = -np.sum(conditional_dist * np.log2(conditional_dist + 1e-12))
                         conditional_entropy += parent_marginal[p_val] * cond_ent
             else:
-                parent_card = child_cpt['evidence_card'][parent_idx] if parent_idx < len(child_cpt['evidence_card']) else 2
-                
                 total_configs = values.shape[1] if values.ndim == 2 else np.prod(values.shape[1:])
                 configs_per_parent = max(1, total_configs // parent_card)
                 
@@ -1940,14 +1901,15 @@ class Coordinator(Client):
                     
                     if values.ndim == 2:
                         slice_values = values[:, start_idx:end_idx]
-                        conditional_dist = np.mean(slice_values, axis=1)
+                        conditional_dist = np.mean(slice_values, axis=1) if slice_values.shape[1] > 0 else marginal_child
                     else:
                         flat_values = values.reshape(values.shape[0], -1)
-                        conditional_dist = np.mean(flat_values[:, start_idx:end_idx], axis=1)
+                        slice_values = flat_values[:, start_idx:end_idx]
+                        conditional_dist = np.mean(slice_values, axis=1) if slice_values.shape[1] > 0 else marginal_child
                     
                     conditional_dist = conditional_dist / (np.sum(conditional_dist) + 1e-12)
                     cond_ent = -np.sum(conditional_dist * np.log2(conditional_dist + 1e-12))
-                    conditional_entropy += cond_ent / parent_card 
+                    conditional_entropy += cond_ent / parent_card
             
             info_gain = marginal_entropy - conditional_entropy
             max_possible_gain = marginal_entropy
@@ -1956,10 +1918,14 @@ class Coordinator(Client):
             return max(0.0, min(1.0, normalized_gain))
             
         except Exception as e:
-            print(f"Warning: Error measuring dependency strength for {parent}->{child}: {e}")
-            return 0.0
-
-
+            if 'evidence_card' in str(e):
+                print(f"Warning: Missing evidence_card for {parent}->{child}, using default cardinalities")
+            else:
+                print(f"Warning: Error measuring dependency strength for {parent}->{child}: {e}")
+            
+            evidence = child_cpt.get('evidence', [])
+            return 1.0 / len(evidence) if parent in evidence else 0.0
+    
     def cyclicity_check(self, parent, child, current_edges):
         """
         Check if adding parent->child would create a cycle
@@ -1974,7 +1940,6 @@ class Coordinator(Client):
             return not nx.is_directed_acyclic_graph(G)
         
         except:
-            # Fallback: simple path check
             def has_path(start, end, edges, visited=None):
                 if visited is None:
                     visited = set()
@@ -2009,18 +1974,19 @@ class Coordinator(Client):
 
     def get_variable_cardinality(self, variable, cpts):
         """
-        Get cardinality of a variable from CPTs
+        Get cardinality of a variable from CPTs - FIXED to use cardinality properly
         """
         for cpt in cpts:
             if cpt['variable'] == variable:
                 return cpt['variable_card']
             elif variable in cpt.get('evidence', []):
-                idx = cpt['evidence'].index(variable)
-                if idx < len(cpt['evidence_card']):
-                    return cpt['evidence_card'][idx]
+                evidence = cpt['evidence']
+                idx = evidence.index(variable)
+                cardinality = cpt.get('cardinality', [])
+                if len(cardinality) > idx + 1: 
+                    return cardinality[idx + 1]
         
         return 2  
-
 
     def add_edge_to_cpts(self, parent, child, current_cpts):
         """
@@ -2056,9 +2022,37 @@ class Coordinator(Client):
         return updated_cpts
 
 
+    def ensure_cpt_consistency(self, cpt_dict):
+        """
+        Ensure CPT has consistent cardinality and evidence_card fields
+        """
+        variable_card = cpt_dict.get('variable_card', 2)
+        evidence = cpt_dict.get('evidence', [])
+        
+        cardinality = cpt_dict.get('cardinality', [])
+        
+        if not cardinality:
+            evidence_card = cpt_dict.get('evidence_card', [2] * len(evidence))
+            cardinality = [variable_card] + list(evidence_card)
+            cpt_dict['cardinality'] = cardinality
+        
+        if len(cardinality) > 1:
+            evidence_card = cardinality[1:]
+        else:
+            evidence_card = []
+        
+        while len(evidence_card) < len(evidence):
+            evidence_card.append(2) 
+            
+        cpt_dict['evidence_card'] = evidence_card
+        cpt_dict['cardinality'] = [variable_card] + list(evidence_card)
+        
+        return cpt_dict
+
+
     def recompute_cpt_with_new_structure(self, original_cpt, new_evidence, all_cpts):
         """
-        Recompute CPT with new parent structure
+        Recompute CPT with new parent structure - FIXED cardinality handling
         """
         variable = original_cpt['variable']
         var_card = original_cpt['variable_card']
@@ -2070,9 +2064,12 @@ class Coordinator(Client):
                 if cpt['variable'] == ev:
                     ev_card = cpt['variable_card']
                     break
-                elif ev in cpt['evidence']:
-                    idx = cpt['evidence'].index(ev)
-                    ev_card = cpt['evidence_card'][idx]
+                elif ev in cpt.get('evidence', []):
+                    evidence = cpt['evidence']
+                    idx = evidence.index(ev)
+                    cardinality = cpt.get('cardinality', [])
+                    if len(cardinality) > idx + 1:
+                        ev_card = cardinality[idx + 1]
                     break
             new_evidence_cards.append(ev_card)
         
@@ -2117,13 +2114,15 @@ class Coordinator(Client):
             if new_values.size == np.prod(new_shape):
                 new_values = new_values.reshape(new_shape)
         
+        new_cardinality = [var_card] + new_evidence_cards
+        
         return {
             'variable': variable,
             'variable_card': var_card,
             'values': new_values,
             'evidence': new_evidence,
-            'evidence_card': np.array(new_evidence_cards, dtype=int),
-            'cardinality': np.array([var_card] + new_evidence_cards, dtype=int)
+            'evidence_card': new_evidence_cards, 
+            'cardinality': new_cardinality  
         }
 
     def build_model_from_cpts(self, cpts: List[Dict[str, Any]]) -> DiscreteBayesianNetwork:
