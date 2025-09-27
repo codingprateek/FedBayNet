@@ -49,7 +49,11 @@ pip install -r requirements.txt
    After starting the controller, you can run the FedBayNet app using CLI as:
    ```
    featurecloud test start --app-image fc-fedbaynet \
-   --client-dirs 'client1,client2,client3' \
+   --client-dirs '[dir_name]/client1,[dir_name]/client2,[dir_name]client3' \
    --generic-dir 'generic' \
    --download-results results
    ```
+   The placeholder `dir_name` can be replaced with the following based on the associated datasets:
+   - ckd_200: 200 samples,
+   - ckd_200_prox: 200 samples, non-IID data
+   - ckd_400: 400 samples
