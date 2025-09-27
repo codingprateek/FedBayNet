@@ -30,6 +30,8 @@ pip install -r requirements.txt
      CPTs. This structure is further refined using client consensus for edge operations.
    - **Await Aggregation State**: The participants wait for the aggregation results (updated global network) from the coordinator.
    - **Final State**: All participants and the coordinator receive the updated global CPTs and network structure.
+  
+   
    
    Steps to run the app using FeatureCloud:
    ```
