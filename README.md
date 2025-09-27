@@ -23,22 +23,13 @@ pip install -r requirements.txt
    python main.py --data ../Dataset/encoded_kidney_data.csv --output Results
    ```
 3. [Federated Averaging Implementation (FeatureCloud)](./fc-fedbaynet)
-   - **Read Input State**: Starting from the initial state, each participant, including the coordinator, reads its private dataset and a common configuration file for parameters and paths.
-   - **Broadcast State**: The coordinator initially broadcasts the expert knowledge-based network and then the tuned global network in subsequent iterations.
-   - **Await Broadcast State**: The participants wait for network from the coordinator.
-   - **Local Computation State**: All participants and the coordinator compute their respective CPTs based on their private data and the received network structure. The CPTs along with dataset size are sent to the coordinator.
-   - **Aggregation State**: The coordinator receives the CPTs and aggregates them, weighted by the associated participant's dataset size. The aggregated CPTs are used to create a new global network structure. This network is then
-     compared with the expert-knowledge based network.
+   - **Read Input State**: Starting from the initial state, each participant, including the coordinator, reads its private dataset, expert knowledge and a common configuration file for parameters and paths.
+   - **Local Computation State**: In the 0th iteration, all the clients share their respective whitelists and blacklists with the coordinator. In the subsequent iterations, clients perform global network and data-driven network fusion
+     and local CPTs computation. These CPTs are then shared with the coordinator for aggregation. 
+   - **Aggregation State**: The coordinator creates an expert knowledge-based network in the 0th iteration using client consensus. In the subsequent iterations, local CPTs are aggregated and a global network is built from the aggregated
+     CPTs. This structure is further refined using client consensus for edge operations.
    - **Await Aggregation State**: The participants wait for the aggregation results (updated global network) from the coordinator.
    - **Final State**: All participants and the coordinator receive the updated global CPTs and network structure.
-
-   <p align="center">
-   <img width="400" height="300" alt="States Flow Diagram" src="https://github.com/user-attachments/assets/5dbf302a-b09f-468c-bc7a-0990bcd06b4c" />
-     <br>
-     <em>Figure 1: FedBayNet States and Transitions</em>
-   </p>
-
-4. FedProx Implementation
    
    Steps to run the app using FeatureCloud:
    ```
@@ -49,7 +40,7 @@ pip install -r requirements.txt
    After starting the controller, you can run the FedBayNet app using CLI as:
    ```
    featurecloud test start --app-image fc-fedbaynet \
-   --client-dirs '[dir_name]/client1,[dir_name]/client2,[dir_name]client3' \
+   --client-dirs '[dir_name]/client1,[dir_name]/client2,[dir_name]/client3' \
    --generic-dir 'generic' \
    --download-results results
    ```
