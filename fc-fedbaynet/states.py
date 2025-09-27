@@ -11,6 +11,26 @@ import matplotlib.pyplot as plt
 import logging
 logging.getLogger("pgmpy").setLevel(logging.WARNING)
 
+import warnings
+
+warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore', category=UserWarning, module='pgmpy')
+warnings.filterwarnings('ignore', message='.*Replacing existing CPD.*')
+warnings.filterwarnings('ignore', message='.*pgmpy.*')
+
+pgmpy_loggers = [
+    "pgmpy",
+    "pgmpy.models", 
+    "pgmpy.factors",
+    "pgmpy.estimators",
+    "pgmpy.inference",
+    "pgmpy.base",
+    "pgmpy.readwrite"
+]
+
+for logger_name in pgmpy_loggers:
+    logging.getLogger(logger_name).setLevel(logging.CRITICAL)
+
 # FedBayNet States
 INITIAL = 'initial'
 READ_INPUT = 'read input'
@@ -76,6 +96,10 @@ class ReadInputState(AppState):
                 blacklist = [tuple(edge) for edge in expknowledge["blacklist"]]
                 whitelist = [tuple(edge) for edge in expknowledge["whitelist"]]
 
+            label = self.load('label')
+            forbidden_edges = [(label, feature) for feature in dataset.columns if feature != label]
+            self.store('forbidden_edges', forbidden_edges)
+
             self.store('roles', roles)
             self.store('splits', splits)
 
@@ -135,16 +159,25 @@ class ReadInputState(AppState):
         config = config_file['fc_fedbaynet']
         self.store('dataset', config['input']['dataset_loc'])
         self.store('bwlists', config['input']['bwlists_loc'])
+        self.store('label', config['input']['label'])
         self.store('split_mode', config['split']['mode'])
         self.store('split_dir', config['split']['dir']) 
         self.store('max_iterations', config['max_iterations'])
         self.store('cv_folds', config['cv_folds'])
 
-        self.store('sim_thresh', config['network_fusion']['sim_thresh'])
         self.store('expert_weight', config['network_fusion']['expert_weight'])
+        self.store('add_node_threshold', config['network_fusion']['add_node_threshold'])
+        self.store('add_edge_threshold', config['network_fusion']['add_edge_threshold'])
+        self.store('reverse_edge_threshold', config['network_fusion']['reverse_edge_threshold'])
+        self.store('remove_edge_threshold', config['network_fusion']['remove_edge_threshold'])
+        self.store('max_changes_fusion', config['network_fusion']['max_changes_fusion'])
 
-        self.store('consensus_thresh', config['consensus_params']['consensus_thresh'])
+        self.store('addition_threshold', config['consensus_params']['addition_threshold'])
+        self.store('removal_threshold', config['consensus_params']['removal_threshold'])
+        self.store('reversal_threshold', config['consensus_params']['reversal_threshold'])
+        self.store('node_addition_threshold', config['consensus_params']['node_addition_threshold'])
         self.store('max_changes', config['consensus_params']['max_changes'])
+
         
         splits = {}
         if self.load('split_mode') == "directory":
@@ -190,10 +223,18 @@ class LocalComputationState(AppState):
         dataset = self.load('dataset')
         blacklist = self.load('blacklist')
         whitelist = self.load('whitelist')
-        sim_thresh = self.load('sim_thresh')
+        forbidden_edges = self.load('forbidden_edges')
+
         expert_weight = self.load('expert_weight')
+        add_node_threshold = self.load('add_node_threshold')
+        add_edge_threshold = self.load('add_edge_threshold')
+        reverse_edge_threshold = self.load('reverse_edge_threshold')
+        remove_edge_threshold = self.load('remove_edge_threshold')
+        max_changes_fusion = self.load('max_changes_fusion')
+
         mu = self.load('mu')
         epochs = self.load('epochs')
+        lr = self.load('lr')
         
         participant = Coordinator() if self.is_coordinator else Client()
 
@@ -210,27 +251,34 @@ class LocalComputationState(AppState):
         else:
             if self.is_coordinator:
                 global_network = self.load("global_network")
-                aggregated_cpts = self.load('aggregated_cpts')
             else:
                 global_network = self.load("global_network_client")
-                aggregated_cpts = self.load("aggregated_cpts_client")
             
             initial_local_network = self.load('initial_local_network')
-            client_network = participant.fuse_bayesian_networks(global_network, initial_local_network, dataset, similarity_threshold=sim_thresh, expert_weight=expert_weight)
+            client_network = participant.fuse_bayesian_networks(global_network, initial_local_network, dataset, 
+                                                                expert_weight=expert_weight, 
+                                                                add_node_threshold=add_node_threshold, 
+                                                                add_edge_threshold=add_edge_threshold, 
+                                                                reverse_edge_threshold=reverse_edge_threshold, 
+                                                                remove_edge_threshold=remove_edge_threshold,
+                                                                max_changes = max_changes_fusion)
 
             client_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
 
             if iteration > max_iterations:
                 results_path = os.path.join(output_dir, "results.csv")
-                avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=results_path)
+                avg_acc = participant.kfold_cv(dataset, global_network, csv_filename=results_path)
                 self.log(f"[CLIENT] Final results saved to {results_path}")
             else:
-                avg_acc = participant.kfold_cv(dataset, client_network, csv_filename=None)
+                avg_acc = participant.kfold_cv(dataset, global_network, csv_filename=None)
                 
-            self.log(f"[CLIENT] Average Accuracy for Global Network {iteration}: {avg_acc}")
+            self.log(f"[CLIENT] Average Accuracy for Global Network {iteration}: {avg_acc['average_accuracy']:.4f}")
             
             accuracy_history = self.load('accuracy_history')
-            accuracy_history.append(avg_acc)
+            if isinstance(avg_acc, dict):
+                accuracy_history.append(avg_acc['average_accuracy'])
+            else:
+                accuracy_history.append(avg_acc)
             self.store("accuracy_history", accuracy_history)
                     
             client_payload = {
@@ -285,7 +333,12 @@ class AggregateState(AppState):
         output_dir = "/mnt/output"
         iteration = self.load('iteration')
         max_iterations = self.load('max_iterations')
-        consensus_thresh = self.load('consensus_thresh')
+        forbidden_edges = self.load('forbidden_edges')
+
+        addition_threshold = self.load('addition_threshold')
+        removal_threshold = self.load('removal_threshold')
+        reversal_threshold = self.load('reversal_threshold')
+        node_addition_threshold = self.load('node_addition_threshold')
         max_changes = self.load('max_changes')
 
         self.log(f"[COORDINATOR] Aggregating iteration {iteration}")
@@ -304,8 +357,17 @@ class AggregateState(AppState):
             self.log("[COORDINATOR] Aggregating CPTs and building global network structure...")
             clients_cpts = [payload["client_cpts"] for payload in client_payload]
             dataset_sizes = [payload["dataset_size"] for payload in client_payload]
-            aggregated_cpts = coordinator.learn_parameters(clients_cpts, dataset_sizes, max_changes=max_changes, consensus_threshold=consensus_thresh)
-            global_network = coordinator.build_model_from_cpts(aggregated_cpts)
+            aggregated_cpts = coordinator.learn_parameters(
+                                clients_cpts, 
+                                dataset_sizes, 
+                                max_changes=max_changes, 
+                                addition_threshold=addition_threshold,
+                                removal_threshold=removal_threshold, 
+                                reversal_threshold=reversal_threshold,
+                                node_addition_threshold=node_addition_threshold,
+                                forbidden_edges = None
+                            )
+            global_network = coordinator.build_model_from_cpts(aggregated_cpts, forbidden_edges=None)
 
         self.store("aggregated_cpts", aggregated_cpts)
         self.store("global_network", global_network)
@@ -318,7 +380,6 @@ class AggregateState(AppState):
 
         self.log(f"[DEBUG] Saved CPTs to: {cpts_path}")
         self.log(f"[DEBUG] Aggregated CPT count: {len(aggregated_cpts)}")
-        self.log(f"[DEBUG] Output dir contents: {os.listdir(output_dir)}")
 
         # Stopping condition
         if iteration > int(max_iterations):
@@ -377,19 +438,80 @@ class FinalState(AppState):
     def plot_accuracy(self, accs, output_dir, filename="accuracy_trend.png"):
         os.makedirs(output_dir, exist_ok=True)
 
+        if not accs or len(accs) == 0:
+            print("No accuracy data to plot")
+            return None
+        
+        accs = np.clip(accs, 0.0, 1.0)
         iterations = np.arange(1, len(accs) + 1)
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(iterations, accs, marker='o', linestyle='-', color='#22666F')
-        plt.title("Average Accuracy Across Federated Iterations")
-        plt.xlabel("Iteration")
-        plt.ylabel("Average Accuracy (%)")
-        plt.xticks(np.arange(0, len(accs) + 1, 1))
-        plt.ylim(0.5, 1)
-        plt.yticks(np.arange(0.5, 1.05, 0.1))
+        plt.figure(figsize=(10, 6))
+        
+        plt.plot(iterations, accs, marker='o', linestyle='-', 
+                color='#22666F', linewidth=2, markersize=6, 
+                markerfacecolor='#22666F', markeredgecolor='white', 
+                markeredgewidth=1)
+        
+        plt.xlabel("Iteration", fontsize=12)
+        plt.ylabel("Average Accuracy", fontsize=12)
+        
+        max_iterations = len(accs)
+        if max_iterations <= 15:
+            plt.xticks(iterations)
+        else:
+            tick_interval = max(1, max_iterations // 10)
+            tick_positions = np.arange(1, max_iterations + 1, tick_interval)
+            if max_iterations not in tick_positions:
+                tick_positions = np.append(tick_positions, max_iterations)
+            plt.xticks(tick_positions)
+        
+        min_acc = min(accs)
+        max_acc = max(accs)
+        
+        if max_acc >= 0.99:
+            plt.ylim(max(0.0, min_acc - 0.05), 1.02)
+            plt.yticks(np.arange(max(0.0, min_acc - 0.05), 1.05, 0.05))
+        elif min_acc <= 0.01:
+            plt.ylim(-0.02, max(1.0, max_acc + 0.05))
+            plt.yticks(np.arange(0.0, max(1.0, max_acc + 0.05), 0.1))
+        else:
+            buffer = (max_acc - min_acc) * 0.1 + 0.02
+            plt.ylim(max(0.0, min_acc - buffer), min(1.02, max_acc + buffer))
+            plt.yticks(np.arange(0.0, 1.05, 0.1))
+        
+        plt.grid(True, alpha=0.3, linestyle='--')
+        
+        if len(accs) <= 15:
+            for i, acc in enumerate(accs):
+                if i == 0 or i == len(accs) - 1 or acc >= 0.99 or acc <= 0.01:
+                    plt.annotate(f'{acc:.3f}', 
+                            (iterations[i], acc),
+                            textcoords="offset points", 
+                            xytext=(0, 10), 
+                            ha='center',
+                            fontsize=9,
+                            bbox=dict(boxstyle='round,pad=0.3', 
+                                    facecolor='yellow', 
+                                    alpha=0.7,
+                                    edgecolor='none'))
+        
+        stats_text = f'Final: {accs[-1]:.3f}\nBest: {max_acc:.3f}\nWorst: {min_acc:.3f}'
+        plt.text(0.98, 0.02, stats_text, 
+                transform=plt.gca().transAxes, 
+                verticalalignment='bottom',
+                horizontalalignment='right',
+                bbox=dict(boxstyle='round,pad=0.5', 
+                        facecolor='lightblue', 
+                        alpha=0.8),
+                fontsize=10)
+        
+        plt.tight_layout()
+        
         acc_plot_path = os.path.join(output_dir, filename)
-        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight')
+        plt.savefig(acc_plot_path, dpi=300, bbox_inches='tight', 
+                    facecolor='white', edgecolor='none')
         plt.close()
+        
         return acc_plot_path
 
     def run(self):
