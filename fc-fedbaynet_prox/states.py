@@ -11,6 +11,30 @@ import matplotlib.pyplot as plt
 import logging
 logging.getLogger("pgmpy").setLevel(logging.WARNING)
 
+import warnings
+
+warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore', category=UserWarning, module='pgmpy')
+warnings.filterwarnings('ignore', message='.*Replacing existing CPD.*')
+warnings.filterwarnings('ignore', message='.*pgmpy.*')
+
+pgmpy_loggers = [
+    "pgmpy",
+    "pgmpy.models", 
+    "pgmpy.factors",
+    "pgmpy.estimators",
+    "pgmpy.inference",
+    "pgmpy.base",
+    "pgmpy.readwrite"
+]
+
+for logger_name in pgmpy_loggers:
+    logging.getLogger(logger_name).setLevel(logging.CRITICAL)
+
+# # Alternative: Set the root pgmpy logger
+# logging.getLogger("pgmpy").setLevel(logging.CRITICAL)
+# logging.getLogger("pgmpy").propagate = False  # Prevent propagation to parent loggers
+
 # FedBayNet States
 INITIAL = 'initial'
 READ_INPUT = 'read input'
@@ -76,6 +100,10 @@ class ReadInputState(AppState):
                 blacklist = [tuple(edge) for edge in expknowledge["blacklist"]]
                 whitelist = [tuple(edge) for edge in expknowledge["whitelist"]]
 
+            label = self.load('label')
+            forbidden_edges = [(label, feature) for feature in dataset.columns if feature != label]
+            self.store('forbidden_edges', forbidden_edges)
+
             self.store('roles', roles)
             self.store('splits', splits)
 
@@ -135,6 +163,7 @@ class ReadInputState(AppState):
         config = config_file['fc_fedbaynet_prox']
         self.store('dataset', config['input']['dataset_loc'])
         self.store('bwlists', config['input']['bwlists_loc'])
+        self.store('label', config['input']['label'])
         self.store('split_mode', config['split']['mode'])
         self.store('split_dir', config['split']['dir']) 
         self.store('max_iterations', config['max_iterations'])
@@ -202,6 +231,8 @@ class LocalComputationState(AppState):
         dataset = self.load('dataset')
         blacklist = self.load('blacklist')
         whitelist = self.load('whitelist')
+        forbidden_edges = self.load('forbidden_edges')
+
         expert_weight = self.load('expert_weight')
         add_node_threshold = self.load('add_node_threshold')
         add_edge_threshold = self.load('add_edge_threshold')
@@ -228,10 +259,10 @@ class LocalComputationState(AppState):
         else:
             if self.is_coordinator:
                 global_network = self.load("global_network")
-                aggregated_cpts = self.load('aggregated_cpts')
+                # aggregated_cpts = self.load('aggregated_cpts')
             else:
                 global_network = self.load("global_network_client")
-                aggregated_cpts = self.load("aggregated_cpts_client")
+                # aggregated_cpts = self.load("aggregated_cpts_client")
             
             initial_local_network = self.load('initial_local_network')
             client_network = participant.fuse_bayesian_networks(global_network, initial_local_network, dataset, 
@@ -242,8 +273,8 @@ class LocalComputationState(AppState):
                                                                 remove_edge_threshold=remove_edge_threshold,
                                                                 max_changes = max_changes_fusion)
 
-            local_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
-            client_cpts = participant.fedprox_local_update(local_cpts, aggregated_cpts, dataset, mu=mu, epochs=epochs, lr=lr)
+            client_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
+            # client_cpts = participant.fedprox_local_update(local_cpts, aggregated_cpts, dataset, mu=mu, epochs=epochs, lr=lr)
 
             if iteration > max_iterations:
                 results_path = os.path.join(output_dir, "results.csv")
@@ -252,10 +283,13 @@ class LocalComputationState(AppState):
             else:
                 avg_acc = participant.kfold_cv(dataset, global_network, csv_filename=None)
                 
-            self.log(f"[CLIENT] Average Accuracy for Global Network {iteration}: {avg_acc}")
+            self.log(f"[CLIENT] Average Accuracy for Global Network {iteration}: {avg_acc['average_accuracy']:.4f}")
             
             accuracy_history = self.load('accuracy_history')
-            accuracy_history.append(avg_acc)
+            if isinstance(avg_acc, dict):
+                accuracy_history.append(avg_acc['average_accuracy'])
+            else:
+                accuracy_history.append(avg_acc)
             self.store("accuracy_history", accuracy_history)
                     
             client_payload = {
@@ -310,6 +344,8 @@ class AggregateState(AppState):
         output_dir = "/mnt/output"
         iteration = self.load('iteration')
         max_iterations = self.load('max_iterations')
+        forbidden_edges = self.load('forbidden_edges')
+
         addition_threshold = self.load('addition_threshold')
         removal_threshold = self.load('removal_threshold')
         reversal_threshold = self.load('reversal_threshold')
@@ -339,9 +375,10 @@ class AggregateState(AppState):
                                 addition_threshold=addition_threshold,
                                 removal_threshold=removal_threshold, 
                                 reversal_threshold=reversal_threshold,
-                                node_addition_threshold=node_addition_threshold
+                                node_addition_threshold=node_addition_threshold,
+                                forbidden_edges = None
                             )
-            global_network = coordinator.build_model_from_cpts(aggregated_cpts)
+            global_network = coordinator.build_model_from_cpts(aggregated_cpts, forbidden_edges=None)
 
         self.store("aggregated_cpts", aggregated_cpts)
         self.store("global_network", global_network)

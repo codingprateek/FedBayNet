@@ -6,27 +6,22 @@ fc_fedbaynet_prox:
   split:
     mode: "file"
     dir: "."        
-  max_iterations: 15
+  max_iterations: 10                  # Number of federated learning iterations
   cv_folds: 5
   fedprox:
-    # μ = 0.0: Pure Federated Averaging (no proximal regularization)
-    # μ = 0.1: Light regularization toward global model
-    # μ = 0.3: Moderate regularization (recommended starting point)
-    # μ = 0.5: Strong regularization
-    # μ = 1.0: Maximum regularization (heaviest pull toward global model)
-    mu: 0             # Moderate proximal regularization
-    epochs: 50           # Local training epochs per round
-    lr: 0.03             # Learning rate (lower with higher mu values)
+    mu: 0            
+    epochs: 50        
+    lr: 0.03            
   network_fusion:
-    expert_weight: 0.7          # Higher weight = more trust in expert network vs data-driven network
-    add_node_threshold: 0.6     # Higher threshold = harder to add new variables to network
-    add_edge_threshold: 0.3     # Lower threshold = easier to add new connections between variables
-    reverse_edge_threshold: 0.9 # Higher threshold = harder to flip edge directions based on data
-    remove_edge_threshold: 0.9  # Lower threshold = easier to remove weak connections
-    max_changes_fusion: 2       # Higher limit = allows more structural changes per fusion step
+    expert_weight: 0.5                # Higher weight = more trust in expert network vs data-driven network
+    add_node_threshold: 0.3           # Higher threshold = harder to add new variables to network
+    add_edge_threshold: 0.3           # Higher threshold = harder to add new connections between variables
+    reverse_edge_threshold: 0.8       # Higher threshold = harder to flip edge directions based on data
+    remove_edge_threshold: 0.1        # Higher threshold = harder to remove connections
+    max_changes_fusion: 10            # Higher limit = allows more structural changes per fusion step
   consensus_params:
-    addition_threshold: 0.3     # Lower threshold = requires less client agreement to add edges
-    removal_threshold: 0.9      # Higher threshold = requires more client agreement to remove edges
-    reversal_threshold: 0.9    # Higher threshold = requires more client agreement to reverse edges
-    node_addition_threshold: 0.3 # Lower threshold = requires less client agreement to add variables
-    max_changes: 2              # Higher limit = allows more structural updates per iteration
+    addition_threshold: 0.3           # Higher threshold = requires more client agreement to add edges
+    removal_threshold: 0.9           # Higher threshold = requires more client agreement to remove edges
+    reversal_threshold: 0.9          # Higher threshold = requires more client agreement to reverse edges
+    node_addition_threshold: 0.3      # Higher threshold = requires more client agreement to add variables
+    max_changes: 10                    # Higher limit = allows more structural updates per iteration

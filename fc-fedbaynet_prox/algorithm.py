@@ -7,7 +7,7 @@ from collections import defaultdict
 import itertools
 
 from pgmpy.models import DiscreteBayesianNetwork
-from pgmpy.estimators import HillClimbSearch, TreeSearch, PC, GES, BIC, MaximumLikelihoodEstimator, BayesianEstimator
+from pgmpy.estimators import HillClimbSearch, TreeSearch, PC, GES, BIC, BayesianEstimator, ExpertKnowledge
 from pgmpy.factors.discrete.CPD import TabularCPD
 from pgmpy.inference import VariableElimination
 import networkx as nx
@@ -53,7 +53,6 @@ class Client:
                 node_color: str = '#22666F',
                 target_size: int = 1200,
                 node_size: int = 800,
-                seed: int = 23,
                 figsize: Tuple[int, int] = (10, 8),
                 save_path: Optional[str] = None,
                 title_prefix: str = "Bayesian Network",
@@ -290,11 +289,20 @@ class Client:
             if not pd.api.types.is_categorical_dtype(df[c]):
                 df[c] = df[c].astype("category")
         
+        forbidden_edges = []
+        if 'class' in df.columns:
+            for col in df.columns:
+                if col != 'class':
+                    forbidden_edges.append(('class', col))
+            print(f"Forbidden edges: class cannot be parent of any variable")
+
+        class_constraint = ExpertKnowledge(forbidden_edges=forbidden_edges)
+
         candidates = {}
         
         try:
             pc = PC(df)
-            candidates["pc"] = pc.estimate(variant="stable", ci_test="chi_square", return_type="dag")
+            candidates["pc"] = pc.estimate(variant="stable", ci_test="chi_square", return_type="dag", expert_knowledge=class_constraint, show_progress=False)
             print("PC algorithm completed successfully")
         except Exception as e:
             print(f"PC algorithm failed: {e}")
@@ -302,87 +310,26 @@ class Client:
         
         try:
             hc = HillClimbSearch(df)
-            candidates["hill_climb"] = hc.estimate(scoring_method='bic-d')
+            candidates["hill_climb"] = hc.estimate(scoring_method='bic-d', expert_knowledge=class_constraint, show_progress=False)
             print("Hill Climbing algorithm completed successfully")
         except Exception as e:
             print(f"Hill Climbing algorithm failed: {e}")
             pass
         
-        try:
-            hc_tabu = HillClimbSearch(df)
-            candidates["tabu"] = hc_tabu.estimate(scoring_method='bic-d', tabu_length=100)
-            print("Tabu Search algorithm completed successfully")
-        except Exception as e:
-            print(f"Tabu Search algorithm failed: {e}")
-            pass
-        
-        try:
-            tree = TreeSearch(df)
-            candidates["chow_liu"] = tree.estimate(estimator_type="chow-liu")
-            print("Chow-Liu Tree algorithm completed successfully")
-        except Exception as e:
-            print(f"Chow-Liu Tree algorithm failed: {e}")
-            pass
-        
-        try:
-            if 'class' in df.columns:
-                tree_tan = TreeSearch(df)
-                candidates["tan"] = tree_tan.estimate(estimator_type="tan", class_node="class")
-        except Exception as e:
-            print(f"PC algorithm failed: {e}")
-            pass
-        
-        try:
-            hc = HillClimbSearch(df)
-            candidates["hill_climb"] = hc.estimate(scoring_method='bic-d')
-            print("Hill Climbing algorithm completed successfully")
-        except Exception as e:
-            print(f"Hill Climbing algorithm failed: {e}")
-            pass
-        
-        try:
-            hc_tabu = HillClimbSearch(df)
-            candidates["tabu"] = hc_tabu.estimate(scoring_method='bic-d', tabu_length=100)
-            print("Tabu Search algorithm completed successfully")
-        except Exception as e:
-            print(f"Tabu Search algorithm failed: {e}")
-            pass
-        
-        try:
-            tree = TreeSearch(df)
-            candidates["chow_liu"] = tree.estimate(estimator_type="chow-liu")
-            print("Chow-Liu Tree algorithm completed successfully")
-        except Exception as e:
-            print(f"Chow-Liu Tree algorithm failed: {e}")
-            pass
-        
-        try:
-            if 'class' in df.columns:
-                tree_tan = TreeSearch(df)
-                candidates["tan"] = tree_tan.estimate(estimator_type="tan", class_node="class")
-                print("TAN (Tree Augmented Naive Bayes) algorithm completed successfully")
-        except Exception as e:
-            print(f"TAN algorithm failed: {e}")
-            pass
-
+        # try:
+        #     tree = TreeSearch(df)
+        #     candidates["chow_liu"] = tree.estimate(estimator_type="chow-liu", show_progress=False)
+        #     print("Chow-Liu Tree algorithm completed successfully")
+        # except Exception as e:
+        #     print(f"Chow-Liu Tree algorithm failed: {e}")
+        #     pass
+    
         try:
             ges = GES(df)
-            candidates["ges"] = ges.estimate(scoring_method='bic-d')
+            candidates["ges"] = ges.estimate(scoring_method='bic-d', expert_knowledge=class_constraint, debug=False)
             print("GES (Greedy Equivalence Search) algorithm completed successfully")
         except Exception as e:
             print(f"GES algorithm failed: {e}")
-            pass
-        
-        try:
-            if df.shape[1] <= 8:
-                from pgmpy.estimators import ExhaustiveSearch
-                exhaustive = ExhaustiveSearch(df, scoring_method=BIC(df))
-                candidates["exhaustive"] = exhaustive.estimate()
-                print("Exhaustive Search algorithm completed successfully")
-            else:
-                print("Exhaustive Search skipped: too many variables (>8)")
-        except Exception as e:
-            print(f"Exhaustive Search algorithm failed: {e}")
             pass
         
         unique_structures = {}
@@ -400,7 +347,7 @@ class Client:
             print("No valid structures found - creating empty Bayesian Network")
             empty_bn = DiscreteBayesianNetwork()
             empty_bn.add_nodes_from(df.columns)
-            return empty_bn.fit(df, estimator=MaximumLikelihoodEstimator)
+            return empty_bn.fit(df, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
         
         bic_scorer = BIC(df)
         best_score = float('-inf')
@@ -433,7 +380,7 @@ class Client:
             print("No structure could be evaluated - creating empty Bayesian Network")
             empty_bn = DiscreteBayesianNetwork()
             empty_bn.add_nodes_from(df.columns)
-            return empty_bn.fit(df, estimator=MaximumLikelihoodEstimator)
+            return empty_bn.fit(df, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
         
         print(f"BEST ALGORITHM: {best_algorithm.upper()}")
         print(f"Best BIC Score: {best_score:.2f}")
@@ -442,7 +389,7 @@ class Client:
         if len(best_structure.edges()) > 0:
             print(f"   Edges: {list(best_structure.edges())}")
         
-        best_model = best_structure.fit(df, estimator=MaximumLikelihoodEstimator)
+        best_model = best_structure.fit(df, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
         return best_model
 
     def compute_local_cpts_from_structure_and_data(self, 
@@ -459,7 +406,7 @@ class Client:
             A list of dictionaries containing CPT information for each variable
         """
         model = DiscreteBayesianNetwork(structure)
-        model = model.fit(data, estimator=MaximumLikelihoodEstimator)
+        model = model.fit(data, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
 
         cpts_list: List[Dict[str, Any]] = []
         for cpt in model.get_cpds():
@@ -701,7 +648,7 @@ class Client:
                 weighted_threshold = add_edge_threshold + (expert_weight * 0.2)
                 
                 if strength >= weighted_threshold:
-                    if not self.would_create_cycle(u, v, fused_structure):
+                    if not self.cyclicity_check(u, v, fused_structure):
                         potential_changes.append(('add_edge', (u, v), strength, weighted_threshold))
                 
         current_edges = set(fused_structure.edges())
@@ -719,7 +666,7 @@ class Client:
                     weighted_threshold = reverse_edge_threshold + (expert_weight * 0.3)
                     
                     if strength_diff >= weighted_threshold:
-                        if not self.would_create_cycle(v, u, fused_structure, exclude_edge=(u, v)):
+                        if not self.cyclicity_check(v, u, fused_structure, exclude_edge=(u, v)):
                             potential_changes.append(('reverse_edge', (u, v), strength_diff, weighted_threshold))
                 
         for u, v in current_edges:
@@ -745,7 +692,7 @@ class Client:
                 
             elif change_type == 'add_edge':
                 u, v = change_data
-                if not self.would_create_cycle(u, v, fused_structure):
+                if not self.cyclicity_check(u, v, fused_structure):
                     fused_structure.add_edge(u, v)
                     changes_made += 1
                 else:
@@ -753,7 +700,7 @@ class Client:
                     
             elif change_type == 'reverse_edge':
                 u, v = change_data
-                if not self.would_create_cycle(v, u, fused_structure, exclude_edge=(u, v)):
+                if not self.cyclicity_check(v, u, fused_structure, exclude_edge=(u, v)):
                     fused_structure.remove_edge(u, v)
                     fused_structure.add_edge(v, u)
                     changes_made += 1
@@ -777,8 +724,7 @@ class Client:
                 filtered_data[node] = filtered_data[node].astype("category")
         
         try:
-            from pgmpy.estimators import MaximumLikelihoodEstimator
-            fused_bn_with_cpds = fused_structure.fit(filtered_data, estimator=MaximumLikelihoodEstimator)
+            fused_bn_with_cpds = fused_structure.fit(filtered_data, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
             
             print(f"Successfully computed CPDs for {len(fused_bn_with_cpds.get_cpds())} variables")
             
@@ -834,18 +780,16 @@ class Client:
                 try:
                     child_cpd = network.get_cpds(child)
                     if child_cpd and parent in (child_cpd.get_evidence() or []):
-                        # Convert pgmpy CPD to your dict format
                         cpt_dict = {
                             'variable': child,
                             'evidence': list(child_cpd.get_evidence() or []),
                             'values': child_cpd.get_values(),
-                            'cardinality': list(child_cpd.cardinality)  # Use full cardinality
+                            'cardinality': list(child_cpd.cardinality)  
                         }
                         return self.measure_dependency_strength(parent, child, cpt_dict)
                 except:
                     pass
             
-            # Fallback to mutual information from data
             if parent in data_df.columns and child in data_df.columns:
                 return self.compute_mutual_information(parent, child, data_df)
             
@@ -909,7 +853,7 @@ class Client:
             return 0.0
 
 
-    def would_create_cycle(self, u, v, network, exclude_edge=None):
+    def cyclicity_check(self, u, v, network, exclude_edge=None):
         """
         Check if adding edge u->v would create a cycle
         """
@@ -929,19 +873,47 @@ class Client:
             print(f"Error checking cycle for edge {u}->{v}: {e}")
             return True  
 
-    def kfold_cv(self, data, model, target='class', k=5, csv_filename=None):
+
+    def get_inference_path(self, model, evidence, target):
+        """Find paths from evidence to target through network"""
+        target_parents = list(model.predecessors(target))
+        evidence_vars = list(evidence.keys())
+        
+        paths = []
+        for ev_var in evidence_vars:
+            if ev_var in target_parents:
+                paths.append(f"{ev_var}->{target}")
+            else:
+                for parent in target_parents:
+                    if nx.has_path(model.to_undirected(), ev_var, parent):
+                        try:
+                            path = nx.shortest_path(model.to_undirected(), ev_var, parent)
+                            paths.append(f"{'->'.join(path)}->{target}")
+                        except:
+                            continue
+        
+        if target_parents:
+            target_deps = f"P({target}|{','.join(target_parents)})"
+        else:
+            target_deps = f"P({target})"
+        
+        path_summary = f"{target_deps}; " + "; ".join(paths[:3])  
+        return path_summary if path_summary != f"{target_deps}; " else target_deps
+
+
+    def kfold_cv(self, data, model, target='class', k=3, csv_filename=None):
         """
-        K-Fold cross-validation with proper probabilistic inference and CSV export.
+        Strict K-Fold cross-validation for Bayesian Networks - NO FALLBACKS
         
         Args:
             data: pandas DataFrame
-            model: pgmpy DiscreteBayesianNetwork 
-            target: target variable name (default 'class')
-            k: number of folds (default 5)
-            csv_filename: optional CSV file to save detailed results
+            model: pgmpy BayesianNetwork 
+            target: target variable name
+            k: number of folds
+            csv_filename: optional CSV file to save results
             
         Returns:
-            average accuracy across folds
+            dict with accuracy and detailed statistics
         """
         
         data = data.copy()
@@ -950,90 +922,154 @@ class Client:
         data['predicted_class'] = np.nan
         data['prediction_confidence'] = np.nan
         data['all_class_probabilities'] = ''
+        data['inference_path'] = '' 
+        data['prediction_status'] = ''  
         
-        kf = KFold(n_splits=k, shuffle=True, random_state=42)
+        skf = KFold(n_splits=k, shuffle=True, random_state=42)
+        
         fold_accuracies = []
+        fold_stats = []
         
-        for fold, (train_idx, test_idx) in enumerate(kf.split(data), 1):
+        for fold, (train_idx, test_idx) in enumerate(skf.split(data.drop(columns=[target]), data[target]), 1):
+            print(f"\n--- Fold {fold}/{k} ---")
+            
             train_data = data.iloc[train_idx]
             test_data = data.iloc[test_idx]
+            
+            successful_predictions = 0
+            failed_predictions = 0
+            correct_predictions = 0
             
             try:
                 model.fit(train_data, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
                 infer = VariableElimination(model)
-                
                 target_cpd = model.get_cpds(target)
                 target_states = (target_cpd.state_names[target] 
                             if hasattr(target_cpd, 'state_names') 
                             else list(range(target_cpd.variable_card)))
                 
-                model_fitted = True
+                print(f"Model fitted successfully.")
+                
             except Exception as e:
-                print(f"Model fitting failed for fold {fold}: {e}")
-                model_fitted = False
-            
-            correct = 0
+                print(f"CRITICAL: Model fitting failed for fold {fold}: {e}")
+                for i in test_idx:
+                    data.at[i, 'prediction_status'] = 'Model Fitting Failed'
+                    data.at[i, 'inference_path'] = ''
+                fold_stats.append({
+                    'fold': fold,
+                    'total_samples': len(test_idx),
+                    'successful_predictions': 0,
+                    'failed_predictions': len(test_idx),
+                    'accuracy_on_successful': np.nan,
+                    'overall_accuracy': 0.0
+                })
+                fold_accuracies.append(0.0)
+                continue
             
             for i in test_idx:
-                if model_fitted:
+                try:
                     evidence = {}
                     for node in model.nodes():
                         if node != target and node in data.columns:
                             val = int(data.iloc[i][node])
+                            
                             if val in train_data[node].values:
                                 evidence[node] = val
-                    
-                    try:
-                        query_result = infer.query(variables=[target], 
-                                                evidence=evidence, show_progress=False)
-                        
-                        prob_dist = query_result.values.flatten()
-                        prob_dist = prob_dist / prob_dist.sum()
-                        
-                        pred_idx = np.argmax(prob_dist)
-                        pred = int(target_states[pred_idx]) if isinstance(target_states[0], str) else target_states[pred_idx]
-                        confidence = float(prob_dist[pred_idx])
-                        
-                        prob_str = ','.join([f'{prob:.4f}' for prob in prob_dist])
-                        
-                    except Exception:
-                        class_counts = train_data[target].value_counts()
-                        pred = int(class_counts.index[0])
-                        confidence = float(class_counts.iloc[0]) / len(train_data)
-                        
-                        prob_dist = []
-                        for state in target_states:
-                            if state in class_counts.index:
-                                prob_dist.append(class_counts[state] / len(train_data))
                             else:
-                                prob_dist.append(0.0)
-                        prob_str = ','.join([f'{prob:.4f}' for prob in prob_dist])
-                else:
-                    pred = int(train_data[target].mode().iloc[0])
-                    confidence = 0.5  
-                    prob_str = '0.5,0.5'  
-                
-                data.at[i, 'predicted_class'] = int(pred)
-                data.at[i, 'prediction_confidence'] = float(confidence)
-                data.at[i, 'binary_class_probabilities'] = prob_str
-                
-                if pred == data.iloc[i][target]:
-                    correct += 1
+                                raise ValueError(f"Unseen value {val} for feature {node}")
+   
+                    query_result = infer.query(variables=[target], evidence=evidence, show_progress=False)
+                    
+                    prob_dist = query_result.values.flatten()
+                    prob_dist = prob_dist / prob_dist.sum()  
+                    pred_idx = np.argmax(prob_dist)
+                    if isinstance(target_states[0], str):
+                        pred = int(target_states[pred_idx])
+                    else:
+                        pred = target_states[pred_idx]
+                    
+                    confidence = float(prob_dist[pred_idx])
+                    prob_str = ','.join([f'{prob:.4f}' for prob in prob_dist])
+                    
+                    inference_path = self.get_inference_path(model, evidence, target)
+                    
+                    data.at[i, 'predicted_class'] = int(pred)
+                    data.at[i, 'prediction_confidence'] = confidence
+                    data.at[i, 'all_class_probabilities'] = prob_str
+                    data.at[i, 'inference_path'] = inference_path
+                    data.at[i, 'prediction_status'] = 'Success'
+                    
+                    successful_predictions += 1
+                    
+                    if pred == data.iloc[i][target]:
+                        correct_predictions += 1
+                        
+                except Exception as e:
+                    data.at[i, 'predicted_class'] = np.nan
+                    data.at[i, 'prediction_confidence'] = np.nan
+                    data.at[i, 'all_class_probabilities'] = ''
+                    data.at[i, 'inference_path'] = ''
+                    data.at[i, 'prediction_status'] = f'Inference Failed: {str(e)[:50]}'
+                    
+                    failed_predictions += 1
             
-            fold_acc = correct / len(test_idx)
-            fold_accuracies.append(fold_acc)
-            print(f"Fold {fold}: {fold_acc:.4f}")
+            # Calculate fold statistics
+            total_samples = len(test_idx)
+            
+            accuracy_on_successful = (correct_predictions / successful_predictions 
+                                    if successful_predictions > 0 else np.nan)
+
+            overall_accuracy = correct_predictions / total_samples
+            
+            fold_stats.append({
+                'fold': fold,
+                'total_samples': total_samples,
+                'successful_predictions': successful_predictions,
+                'failed_predictions': failed_predictions,
+                'correct_predictions': correct_predictions,
+                'accuracy_on_successful': accuracy_on_successful,
+                'overall_accuracy': overall_accuracy,
+                'success_rate': successful_predictions / total_samples
+            })
+            
+            fold_accuracies.append(overall_accuracy)
+            
+            print(f"Fold {fold} Results:")
+            print(f"  Total samples: {total_samples}")
+            print(f"  Successful predictions: {successful_predictions}")
+            print(f"  Failed predictions: {failed_predictions}")
+            print(f"  Correct predictions: {correct_predictions}")
+            print(f"  Accuracy on successful: {accuracy_on_successful:.4f}" if not np.isnan(accuracy_on_successful) else "  Accuracy on successful: N/A")
+            print(f"  Overall accuracy: {overall_accuracy:.4f}")
         
         avg_accuracy = np.mean(fold_accuracies)
-        print(f"Average Accuracy: {avg_accuracy:.4f}")
+        successful_samples = sum(stats['successful_predictions'] for stats in fold_stats)
+        total_samples = sum(stats['total_samples'] for stats in fold_stats)
+        overall_success_rate = successful_samples / total_samples
         
-        if csv_filename is not None:
-            data['predicted_class'] = data['predicted_class'].astype(int)
-            data['prediction_confidence'] = data['prediction_confidence'].astype(float)
+        successful_correct = sum(stats['correct_predictions'] for stats in fold_stats)
+        accuracy_on_successful_only = successful_correct / successful_samples if successful_samples > 0 else np.nan
+        
+        print(f"\n=== FINAL RESULTS ===")
+        print(f"Overall Accuracy (failed = wrong): {avg_accuracy:.4f}")
+        print(f"Accuracy on successful predictions only: {accuracy_on_successful_only:.4f}" if not np.isnan(accuracy_on_successful_only) else "Accuracy on successful predictions only: N/A")
+        print(f"Success rate: {overall_success_rate:.4f} ({successful_samples}/{total_samples})")
+        print(f"Failed predictions: {total_samples - successful_samples}")
+        
+        if csv_filename:
+            data['predicted_class'] = data['predicted_class'].astype('Int64') 
             data.to_csv(csv_filename, index=False)
-            print(f"Results saved to: {csv_filename}")
+            print(f"Detailed results saved to: {csv_filename}")
         
-        return round(float(avg_accuracy), 4)
+        return {
+            'average_accuracy': round(avg_accuracy, 4),
+            'accuracy_on_successful_only': round(accuracy_on_successful_only, 4) if not np.isnan(accuracy_on_successful_only) else None,
+            'success_rate': round(overall_success_rate, 4),
+            'total_samples': total_samples,
+            'successful_predictions': successful_samples,
+            'failed_predictions': total_samples - successful_samples,
+            'fold_details': fold_stats
+        }
 
 class Coordinator(Client):
     """
@@ -1433,7 +1469,8 @@ class Coordinator(Client):
 
     def learn_parameters(self, cpt_lists, weights, max_changes=5, 
                      addition_threshold=0.5, removal_threshold=0.2, 
-                     reversal_threshold=0.6, node_addition_threshold=0.8):
+                     reversal_threshold=0.6, node_addition_threshold=0.8,
+                     forbidden_edges = None):
         """
         Learn structure using client consensus with separate thresholds for different operations
         
@@ -1488,6 +1525,10 @@ class Coordinator(Client):
             for parent in current_variables:
                 for child in current_variables:
                     if parent != child and (parent, child) not in current_edges:
+
+                        # if forbidden_edges and (parent, child) in forbidden_edges:
+                        #     continue
+
                         if self.cyclicity_check(parent, child, current_edges):
                             continue
                         
@@ -1559,6 +1600,10 @@ class Coordinator(Client):
                 
             elif action == 'reverse_edge':
                 parent, child = change_data
+
+                # if forbidden_edges and (child, parent) in forbidden_edges:
+                #     continue
+
                 current_cpts = self.remove_edge_from_cpts(parent, child, current_cpts)
                 current_cpts = self.add_edge_to_cpts(child, parent, current_cpts)
                 current_edges.remove((parent, child))
@@ -2125,7 +2170,7 @@ class Coordinator(Client):
             'cardinality': new_cardinality  
         }
 
-    def build_model_from_cpts(self, cpts: List[Dict[str, Any]]) -> DiscreteBayesianNetwork:
+    def build_model_from_cpts(self, cpts: List[Dict[str, Any]], forbidden_edges: List[Tuple[str, str]] = None) -> DiscreteBayesianNetwork:
         """
         Build a complete Bayesian network model from conditional probability tables.
         
@@ -2136,6 +2181,10 @@ class Coordinator(Client):
             A complete DiscreteBayesianNetwork with structure and parameters
         """
         model = DiscreteBayesianNetwork()
+
+        # forbidden_edges_set = set(forbidden_edges) if forbidden_edges else set()
+        # if forbidden_edges_set:
+        #     print(f"Forbidden edges: {forbidden_edges_set}")
         
         variable_cardinality: Dict[str, int] = {}
         for cpt in cpts:
@@ -2146,9 +2195,20 @@ class Coordinator(Client):
         
         model.add_nodes_from(variable_cardinality.keys())
         
+        edges_added = 0
+        edges_skipped_forbidden = 0
+        edges_skipped_cycle = 0
+
         for cpt in cpts:
             child = cpt['variable']
             for parent in cpt['evidence']:
+                edge = (parent, child)
+                # Check if edge is forbidden
+                # if edge in forbidden_edges_set:
+                #     edges_skipped_forbidden += 1
+                #     print(f"Skipped forbidden edge: {parent} -> {child}")
+                #     continue
+
                 if not model.has_edge(parent, child):
                     try:
                         model.add_edge(parent, child)
@@ -2157,6 +2217,18 @@ class Coordinator(Client):
                             print(f"Skipped edge {parent} -> {child} to avoid cycle")
                         else:
                             raise e
+                        
+        print(f"Edge statistics: {edges_added} added, {edges_skipped_forbidden} forbidden, {edges_skipped_cycle} cycle-prevented")
+        
+        # if forbidden_edges_set:
+        #     actual_forbidden = [edge for edge in model.edges() if edge in forbidden_edges_set]
+        #     if actual_forbidden:
+        #         print(f"[ERROR] Found forbidden edges in final model: {actual_forbidden}")
+        #         for edge in actual_forbidden:
+        #             model.remove_edge(*edge)
+        #             print(f"Removed forbidden edge: {edge}")
+        #     else:
+        #         print(f"[SUCCESS] No forbidden edges found in final model")
         
         def marginalize_cpd_values(values_array: np.ndarray, 
                                  original_evidence: List[str], 
@@ -2308,5 +2380,12 @@ class Coordinator(Client):
             for cpd in model.get_cpds():
                 if not np.allclose(cpd.values.sum(axis=0), 1.0, rtol=1e-10):
                     print(f"CPD for {cpd.variable} does not sum to 1.0")
+
+        # if forbidden_edges_set:
+        #     final_forbidden = [edge for edge in model.edges() if edge in forbidden_edges_set]
+        #     if final_forbidden:
+        #         print(f"[CRITICAL ERROR] Forbidden edges found in final model: {final_forbidden}")
+        #     else:
+        #         print(f"[FINAL SUCCESS] Model built with {len(model.edges())} edges, no forbidden edges present")
         
         return model
