@@ -31,7 +31,10 @@ pip install -r requirements.txt
    - **Await Aggregation State**: The participants wait for the aggregation results (updated global network) from the coordinator.
    - **Final State**: All participants and the coordinator receive the updated global CPTs and network structure.
   
-   ![FedBayNet Workflow]("fedbeynet_workflow")
+   <p align="center">
+   <img src="fedbaynet_workflow.jpeg" alt="FedBayNet Workflow" width="600" />
+   </p>
+
    
    Steps to run the app using FeatureCloud:
    ```
