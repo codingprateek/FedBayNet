@@ -12,8 +12,6 @@ from pgmpy.factors.discrete.CPD import TabularCPD
 from pgmpy.inference import VariableElimination
 import networkx as nx
 
-import torch
-import torch.nn.functional as F
 from sklearn.model_selection import KFold
 
 import warnings
@@ -51,25 +49,24 @@ class Client:
                 target_node: str = 'class',
                 target_color: str = '#9f0000',
                 node_color: str = '#22666F',
-                target_size: int = 1200,
-                node_size: int = 800,
+                target_size: int = 1600,
+                node_size: int = 1600,
                 figsize: Tuple[int, int] = (10, 8),
                 save_path: Optional[str] = None,
                 title_prefix: str = "Bayesian Network",
                 show_weights: bool = True,
                 weight_threshold: float = 0.1) -> None:
         """
-        Visualize a (directed) Bayesian network structure using NetworkX and Matplotlib.
-        Shows weighted edges with thickness only (no colors) if CPDs are available.
+        Visualize a (directed) Bayesian network structure
+        with weighted edges if CPDs are available.
         
         Args:
             structure: The Bayesian network model
-            target_node: Node to highlight (default 'class')
+            target_node: Target class node
             target_color: Color for target node
             node_color: Color for other nodes
             target_size: Size for target node
             node_size: Size for other nodes
-            seed: Random seed for layout
             figsize: Figure size
             save_path: Path to save visualization
             title_prefix: Prefix for plot title
@@ -85,17 +82,12 @@ class Client:
             print("No nodes available for visualization.")
             return 
         
-        _, ax = plt.subplots(figsize=figsize)
+        fig, ax = plt.subplots(figsize=figsize)
         
         pos = nx.circular_layout(graph)
         
         node_colors = [target_color if n == target_node else node_color for n in graph.nodes()]
         node_sizes  = [target_size if n == target_node else node_size  for n in graph.nodes()]
-        
-        nx.draw_networkx_nodes(graph, pos, node_color=node_colors, node_size=node_sizes, ax=ax)
-        nx.draw_networkx_labels(graph, pos,
-                            labels={n: n for n in graph.nodes()},
-                            font_color='black', font_weight='bold', ax=ax)
         
         has_cpds = False
         edge_weights = {}
@@ -106,13 +98,13 @@ class Client:
                 has_cpds = len(cpds) > 0
                 
                 if has_cpds and show_weights:
-                    edge_weights = self._calculate_edge_weights(structure)
+                    edge_weights = self.calculate_edge_weights(structure)
                     
             except (AttributeError, Exception):
                 has_cpds = False
         
         if has_cpds and show_weights and edge_weights:
-            self._draw_weighted_edges_thickness_only(graph, pos, edge_weights, weight_threshold, ax)
+            self.draw_weighted_edges_thickness_only(graph, pos, edge_weights, weight_threshold, ax)
             title_suffix = " (Weighted Edges - Thickness)"
         else:
             nx.draw_networkx_edges(
@@ -120,27 +112,37 @@ class Client:
                 arrows=True,                     
                 arrowstyle='-|>',               
                 arrowsize=20,                   
-                edge_color='#d58303',
+                edge_color='#3f2727',
                 width=1.5,
-                ax=ax
+                ax=ax,
+                connectionstyle='arc3,rad=0.1' 
             )
             title_suffix = " (Simple Edges)"
+        
+        nx.draw_networkx_nodes(graph, pos, node_color=node_colors, 
+                               node_size=node_sizes, ax=ax, 
+                               edgecolors='black', linewidths=2)
+        
+        nx.draw_networkx_labels(graph, pos,
+                            labels={n: n for n in graph.nodes()},
+                            font_color='black', font_weight='bold', ax=ax)
         
         base_title = f"No. of nodes: {graph.number_of_nodes()}, No. of edges: {graph.number_of_edges()}"
         if has_cpds and show_weights:
             base_title += f", Avg. weight: {np.mean(list(edge_weights.values())):.3f}"
         
-        ax.set_title(f"{title_prefix}{title_suffix}\n{base_title}", fontsize=14, pad=20)
+        ax.set_title(f"{title_prefix}{title_suffix}\n{base_title}", fontsize=14, pad=10)
         ax.axis('off')
-        plt.tight_layout()
+        
+        plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
         
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+            plt.savefig(save_path, dpi=300, bbox_inches='tight', pad_inches=0.1)
             print(f"Network visualization saved to: {save_path}")
         
         plt.show()
-
-    def _draw_weighted_edges_thickness_only(self, graph: nx.DiGraph, pos: dict, 
+        
+    def draw_weighted_edges_thickness_only(self, graph: nx.DiGraph, pos: dict, 
                                         edge_weights: Dict[Tuple[str, str], float], 
                                         weight_threshold: float, ax) -> None:
         """
@@ -189,10 +191,12 @@ class Client:
             arrows=True,
             arrowstyle='-|>',
             arrowsize=15,
-            edge_color='#d58303',
+            edge_color='#3f2727',
             width=edge_width_list,
             alpha=0.8,
-            ax=ax
+            ax=ax,
+            min_source_margin=15,
+            min_target_margin=15
         )
         
         if edge_labels:
@@ -229,7 +233,7 @@ class Client:
             ax.legend(handles=legend_elements, loc='upper right', fontsize=10, 
                     title='Edge Weights')
 
-    def _calculate_edge_weights(self, model: DiscreteBayesianNetwork) -> Dict[Tuple[str, str], float]:
+    def calculate_edge_weights(self, model: DiscreteBayesianNetwork) -> Dict[Tuple[str, str], float]:
         """
         Calculate edge weights based on dependency strength from CPDs.
         
@@ -247,7 +251,7 @@ class Client:
                 parents = cpd.get_evidence() or []
                 
                 for parent in parents:
-                    weight = self._calculate_dependency_strength_from_cpd(parent, child, cpd)
+                    weight = self.calculate_dependency_strength_from_cpd(parent, child, cpd)
                     edge_weights[(parent, child)] = weight
                     
         except Exception as e:
@@ -257,14 +261,13 @@ class Client:
         
         return edge_weights
 
-    def _calculate_dependency_strength_from_cpd(self, parent: str, child: str, cpd) -> float:
+    def calculate_dependency_strength_from_cpd(self, parent: str, child: str, cpd) -> float:
         """Use mutual information instead of TV distance for better sensitivity"""
         try:
             values = np.array(cpd.get_values())
             if values.ndim != 2:
                 return 0.0
                 
-            # Calculate mutual information
             joint_prob = values / np.sum(values)
             parent_marginal = np.sum(joint_prob, axis=0)
             child_marginal = np.sum(joint_prob, axis=1)
@@ -315,14 +318,6 @@ class Client:
         except Exception as e:
             print(f"Hill Climbing algorithm failed: {e}")
             pass
-        
-        # try:
-        #     tree = TreeSearch(df)
-        #     candidates["chow_liu"] = tree.estimate(estimator_type="chow-liu", show_progress=False)
-        #     print("Chow-Liu Tree algorithm completed successfully")
-        # except Exception as e:
-        #     print(f"Chow-Liu Tree algorithm failed: {e}")
-        #     pass
     
         try:
             ges = GES(df)
@@ -421,35 +416,14 @@ class Client:
             cpts_list.append(cpt_dict)
 
         return cpts_list
-    
+
     def fuse_bayesian_networks(self, expert_bn, data_bn, data_df,
-                                expert_weight=0.7,
-                                add_node_threshold=0.6,
-                                add_edge_threshold=0.6,
-                                reverse_edge_threshold=0.7,
-                                remove_edge_threshold=0.3,
-                                max_changes=5):
-        """
-        Fuse expert and data networks by starting with expert network and selectively:
-        1. Adding important nodes/edges from data network
-        2. Reversing edges if data strongly suggests opposite direction
-        3. Removing edges if data shows they are weak
-        4. Computing fresh CPDs from data on the final structure
-        
-        Args:
-            expert_bn: Expert knowledge network (foundation)
-            data_bn: Data-driven network (modifications source)
-            data_df: Training data
-            expert_weight: Weight for expert knowledge (0-1) - affects all operations
-            add_node_threshold: Minimum strength to add data-only nodes
-            add_edge_threshold: Minimum strength to add data-only edges  
-            reverse_edge_threshold: Minimum strength to reverse edge direction
-            remove_edge_threshold: Maximum strength to keep expert edges (remove if below)
-            max_changes: Maximum number of structural changes allowed (default: 5)
-        
-        Returns:
-            Fused Bayesian network with structure and fresh CPDs computed from data
-        """       
+                            expert_weight=0.7,
+                            add_node_threshold=0.6,
+                            add_edge_threshold=0.6,
+                            reverse_edge_threshold=0.7,
+                            remove_edge_threshold=0.3,
+                            max_changes=5):
         expert_weight = max(0.0, min(1.0, expert_weight))
         data_weight = 1.0 - expert_weight
                 
@@ -522,7 +496,7 @@ class Client:
                     potential_changes.append(('remove_edge', (u, v), removal_score, weighted_threshold))
         
         potential_changes.sort(key=lambda x: x[2], reverse=True)
-               
+            
         for change_type, change_data, score, threshold in potential_changes:
             if changes_made >= max_changes:
                 break
@@ -565,6 +539,23 @@ class Client:
             if not pd.api.types.is_categorical_dtype(filtered_data[node]):
                 filtered_data[node] = filtered_data[node].astype("category")
         
+        isolated_nodes = [node for node in fused_structure.nodes() 
+                        if fused_structure.degree(node) == 0]
+        
+        if isolated_nodes:
+            print(f"Warning: Found {len(isolated_nodes)} isolated nodes: {isolated_nodes}")
+            print(f"Removing isolated nodes to prevent fitting errors")
+            for node in isolated_nodes:
+                fused_structure.remove_node(node)
+                if node in filtered_data.columns:
+                    filtered_data = filtered_data.drop(columns=[node])
+        
+        available_nodes = [node for node in fused_structure.nodes() if node in filtered_data.columns]
+        
+        if not available_nodes:
+            print("Warning: No nodes remaining after removing isolated nodes")
+            return fused_structure
+        
         try:
             fused_bn_with_cpds = fused_structure.fit(filtered_data, estimator=BayesianEstimator, prior_type="dirichlet", pseudo_counts=1)
             
@@ -581,7 +572,6 @@ class Client:
             print(f"Error computing CPDs: {e}")
             print("Returning structure-only network")
             return fused_structure
-
 
     def measure_node_importance(self, node, data_bn, data_df):
         """
@@ -615,7 +605,7 @@ class Client:
 
     def measure_edge_strength_from_data(self, parent, child, network, data_df):
         """
-        Measure edge strength based on data evidence - FIXED to use cardinality[1:]
+        Measure edge strength based on data evidence 
         """
         try:
             if child in network.nodes():
@@ -727,9 +717,9 @@ class Client:
                 paths.append(f"{ev_var}->{target}")
             else:
                 for parent in target_parents:
-                    if nx.has_path(model.to_undirected(), ev_var, parent):
+                    if nx.has_path(model, ev_var, parent):
                         try:
-                            path = nx.shortest_path(model.to_undirected(), ev_var, parent)
+                            path = nx.shortest_path(model, ev_var, parent)
                             paths.append(f"{'->'.join(path)}->{target}")
                         except:
                             continue
@@ -742,41 +732,60 @@ class Client:
         path_summary = f"{target_deps}; " + "; ".join(paths[:3])  
         return path_summary if path_summary != f"{target_deps}; " else target_deps
 
+    def map_to_closest_value(self, unseen_val, seen_values):
+        """Map unseen value to numerically closest seen value"""
+
+        seen_array = np.array(list(seen_values))
+        distances = np.abs(seen_array - unseen_val)
+        closest_idx = np.argmin(distances)
+        return seen_array[closest_idx]
 
     def kfold_cv(self, data, model, target='class', k=3, csv_filename=None):
         """
-        Strict K-Fold cross-validation for Bayesian Networks - NO FALLBACKS
-        
-        Args:
-            data: pandas DataFrame
-            model: pgmpy BayesianNetwork 
-            target: target variable name
-            k: number of folds
-            csv_filename: optional CSV file to save results
-            
-        Returns:
-            dict with accuracy and detailed statistics
+        K-Fold cross-validation for Global Network evaluation.
         """
         
         data = data.copy()
         data[target] = data[target].astype(int)
         
+        original_columns = data.columns.tolist()
+        
+        state_spaces = {}
+        for col in original_columns:
+            state_spaces[col] = sorted(data[col].unique())
+        
+        print(f"Full state space defined for all variables:")
+        for col, states in state_spaces.items():
+            print(f"  {col}: {len(states)} unique states")
+        
         data['predicted_class'] = np.nan
         data['prediction_confidence'] = np.nan
         data['all_class_probabilities'] = ''
         data['inference_path'] = '' 
-        data['prediction_status'] = ''  
+        data['prediction_status'] = ''
         
         skf = KFold(n_splits=k, shuffle=True, random_state=42)
         
         fold_accuracies = []
         fold_stats = []
         
-        for fold, (train_idx, test_idx) in enumerate(skf.split(data.drop(columns=[target]), data[target]), 1):
+        for fold, (train_idx, test_idx) in enumerate(skf.split(data[original_columns].drop(columns=[target]), data[target]), 1):
             print(f"\n--- Fold {fold}/{k} ---")
             
-            train_data = data.iloc[train_idx]
+            train_data = data.iloc[train_idx][original_columns].copy()
             test_data = data.iloc[test_idx]
+            
+            for col in original_columns:
+                missing_states = set(state_spaces[col]) - set(train_data[col].unique())
+                
+                if missing_states:
+                    print(f"  Adding synthetic rows for {col}: {len(missing_states)} missing states")
+                    
+                    for missing_state in missing_states:
+                        dummy_row = train_data.iloc[0].copy()
+                        dummy_row[col] = missing_state
+                        train_data = pd.concat([train_data, dummy_row.to_frame().T], 
+                                            ignore_index=True)
             
             successful_predictions = 0
             failed_predictions = 0
@@ -790,7 +799,7 @@ class Client:
                             if hasattr(target_cpd, 'state_names') 
                             else list(range(target_cpd.variable_card)))
                 
-                print(f"Model fitted successfully.")
+                print(f"Model fitted successfully with complete state space.")
                 
             except Exception as e:
                 print(f"CRITICAL: Model fitting failed for fold {fold}: {e}")
@@ -812,19 +821,16 @@ class Client:
                 try:
                     evidence = {}
                     for node in model.nodes():
-                        if node != target and node in data.columns:
+                        if node != target and node in original_columns:
                             val = int(data.iloc[i][node])
-                            
-                            if val in train_data[node].values:
-                                evidence[node] = val
-                            else:
-                                raise ValueError(f"Unseen value {val} for feature {node}")
-   
+                            evidence[node] = val
+                    
                     query_result = infer.query(variables=[target], evidence=evidence, show_progress=False)
                     
                     prob_dist = query_result.values.flatten()
                     prob_dist = prob_dist / prob_dist.sum()  
                     pred_idx = np.argmax(prob_dist)
+                    
                     if isinstance(target_states[0], str):
                         pred = int(target_states[pred_idx])
                     else:
@@ -855,7 +861,6 @@ class Client:
                     
                     failed_predictions += 1
             
-            # Calculate fold statistics
             total_samples = len(test_idx)
             
             accuracy_on_successful = (correct_predictions / successful_predictions 
@@ -1055,7 +1060,7 @@ class Coordinator(Client):
    
     def aggregate_cpts(self, clients_cpts: List[List[Dict[str, Any]]], dataset_sizes: List[float]):
         """
-        Aggregate CPTs with enhanced numerical stability checks.
+        Aggregates client CPTs using weighted averaging.
         """
         if len(clients_cpts) != len(dataset_sizes):
             raise ValueError("Number of clients and dataset_sizes must match.")
@@ -1311,8 +1316,7 @@ class Coordinator(Client):
 
     def learn_parameters(self, cpt_lists, weights, max_changes=5, 
                      addition_threshold=0.5, removal_threshold=0.2, 
-                     reversal_threshold=0.6, node_addition_threshold=0.8,
-                     forbidden_edges = None):
+                     reversal_threshold=0.6, node_addition_threshold=0.8):
         """
         Learn structure using client consensus with separate thresholds for different operations
         
@@ -1367,10 +1371,6 @@ class Coordinator(Client):
             for parent in current_variables:
                 for child in current_variables:
                     if parent != child and (parent, child) not in current_edges:
-
-                        # if forbidden_edges and (parent, child) in forbidden_edges:
-                        #     continue
-
                         if self.cyclicity_check(parent, child, current_edges):
                             continue
                         
@@ -1442,10 +1442,6 @@ class Coordinator(Client):
                 
             elif action == 'reverse_edge':
                 parent, child = change_data
-
-                # if forbidden_edges and (child, parent) in forbidden_edges:
-                #     continue
-
                 current_cpts = self.remove_edge_from_cpts(parent, child, current_cpts)
                 current_cpts = self.add_edge_to_cpts(child, parent, current_cpts)
                 current_edges.remove((parent, child))
@@ -1730,7 +1726,6 @@ class Coordinator(Client):
     def measure_dependency_strength(self, parent, child, child_cpt):
         """
         Measure how strongly child depends on parent in this CPT using information gain
-        Fixed to handle missing evidence_card gracefully
         """
         try:
             values = np.array(child_cpt['values'])
@@ -1861,7 +1856,7 @@ class Coordinator(Client):
 
     def get_variable_cardinality(self, variable, cpts):
         """
-        Get cardinality of a variable from CPTs - FIXED to use cardinality properly
+        Get cardinality of a variable from CPTs
         """
         for cpt in cpts:
             if cpt['variable'] == variable:
@@ -1939,7 +1934,7 @@ class Coordinator(Client):
 
     def recompute_cpt_with_new_structure(self, original_cpt, new_evidence, all_cpts):
         """
-        Recompute CPT with new parent structure - FIXED cardinality handling
+        Recompute CPT with new parent structure
         """
         variable = original_cpt['variable']
         var_card = original_cpt['variable_card']
@@ -2012,7 +2007,7 @@ class Coordinator(Client):
             'cardinality': new_cardinality  
         }
 
-    def build_model_from_cpts(self, cpts: List[Dict[str, Any]], forbidden_edges: List[Tuple[str, str]] = None) -> DiscreteBayesianNetwork:
+    def build_model_from_cpts(self, cpts: List[Dict[str, Any]]) -> DiscreteBayesianNetwork:
         """
         Build a complete Bayesian network model from conditional probability tables.
         
@@ -2023,10 +2018,6 @@ class Coordinator(Client):
             A complete DiscreteBayesianNetwork with structure and parameters
         """
         model = DiscreteBayesianNetwork()
-
-        # forbidden_edges_set = set(forbidden_edges) if forbidden_edges else set()
-        # if forbidden_edges_set:
-        #     print(f"Forbidden edges: {forbidden_edges_set}")
         
         variable_cardinality: Dict[str, int] = {}
         for cpt in cpts:
@@ -2045,12 +2036,7 @@ class Coordinator(Client):
             child = cpt['variable']
             for parent in cpt['evidence']:
                 edge = (parent, child)
-                # Check if edge is forbidden
-                # if edge in forbidden_edges_set:
-                #     edges_skipped_forbidden += 1
-                #     print(f"Skipped forbidden edge: {parent} -> {child}")
-                #     continue
-
+     
                 if not model.has_edge(parent, child):
                     try:
                         model.add_edge(parent, child)
@@ -2061,16 +2047,6 @@ class Coordinator(Client):
                             raise e
                         
         print(f"Edge statistics: {edges_added} added, {edges_skipped_forbidden} forbidden, {edges_skipped_cycle} cycle-prevented")
-        
-        # if forbidden_edges_set:
-        #     actual_forbidden = [edge for edge in model.edges() if edge in forbidden_edges_set]
-        #     if actual_forbidden:
-        #         print(f"[ERROR] Found forbidden edges in final model: {actual_forbidden}")
-        #         for edge in actual_forbidden:
-        #             model.remove_edge(*edge)
-        #             print(f"Removed forbidden edge: {edge}")
-        #     else:
-        #         print(f"[SUCCESS] No forbidden edges found in final model")
         
         def marginalize_cpd_values(values_array: np.ndarray, 
                                  original_evidence: List[str], 
@@ -2223,11 +2199,4 @@ class Coordinator(Client):
                 if not np.allclose(cpd.values.sum(axis=0), 1.0, rtol=1e-10):
                     print(f"CPD for {cpd.variable} does not sum to 1.0")
 
-        # if forbidden_edges_set:
-        #     final_forbidden = [edge for edge in model.edges() if edge in forbidden_edges_set]
-        #     if final_forbidden:
-        #         print(f"[CRITICAL ERROR] Forbidden edges found in final model: {final_forbidden}")
-        #     else:
-        #         print(f"[FINAL SUCCESS] Model built with {len(model.edges())} edges, no forbidden edges present")
-        
         return model

@@ -22,7 +22,8 @@
     ["htn", "appet"],
     ["pe", "appet"],
     ["al", "hemo"],
-    ["al", "pcv"]
+    ["al", "pcv"],
+    ["bp_limit", "bp_diastolic"]
   ],
   "blacklist": [
     ["class", "htn"],

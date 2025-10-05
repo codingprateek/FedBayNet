@@ -12,7 +12,8 @@
     ["pc", "ba"],
     ["cad", "class"],
     ["hemo", "rbcc"],
-    ["pcv", "rbc"]
+    ["pcv", "rbc"],
+    ["bp_limit", "bp_diastolic"]
   ],
   "blacklist": [
     ["class", "htn"],

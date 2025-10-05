@@ -1,4 +1,4 @@
-fc_fedbaynet:
+fc_fedbaynet_prox:
   input:
     dataset_loc: "client.csv"
     bwlists_loc: "expert_knowledge.json"
@@ -6,18 +6,18 @@ fc_fedbaynet:
   split:
     mode: "file"
     dir: "."        
-  max_iterations: 10                  # Number of federated learning iterations
-  cv_folds: 5         
+  max_iterations: 7                  # Number of federated learning iterations
+  cv_folds: 5          
   network_fusion:
-    expert_weight: 0.5                # Higher weight = more trust in expert network vs data-driven network
+    expert_weight: 0.7                # Higher weight = more trust in expert network vs data-driven network
     add_node_threshold: 0.3           # Higher threshold = harder to add new variables to network
     add_edge_threshold: 0.3           # Higher threshold = harder to add new connections between variables
     reverse_edge_threshold: 0.8       # Higher threshold = harder to flip edge directions based on data
-    remove_edge_threshold: 0.1        # Higher threshold = harder to remove connections
+    remove_edge_threshold: 0.2        # Higher threshold = harder to remove connections
     max_changes_fusion: 10            # Higher limit = allows more structural changes per fusion step
   consensus_params:
-    addition_threshold: 0.3           # Higher threshold = requires more client agreement to add edges
+    addition_threshold: 0.6           # Higher threshold = requires more client agreement to add edges
     removal_threshold: 0.9           # Higher threshold = requires more client agreement to remove edges
-    reversal_threshold: 0.9          # Higher threshold = requires more client agreement to reverse edges
-    node_addition_threshold: 0.3      # Higher threshold = requires more client agreement to add variables
-    max_changes: 10                    # Higher limit = allows more structural updates per iteration
+    reversal_threshold: 0.6          # Higher threshold = requires more client agreement to reverse edges
+    node_addition_threshold: 0.6      # Higher threshold = requires more client agreement to add variables
+    max_changes: 10                  # Higher limit = allows more structural updates per iteration

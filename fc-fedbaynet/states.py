@@ -1,4 +1,5 @@
 import os
+import time
 import yaml
 import numpy as np
 import pandas as pd
@@ -156,7 +157,7 @@ class ReadInputState(AppState):
         with open(config_path) as f:
             config_file = yaml.load(f, Loader=yaml.FullLoader)
 
-        config = config_file['fc_fedbaynet']
+        config = config_file['fc_fedbaynet_prox']
         self.store('dataset', config['input']['dataset_loc'])
         self.store('bwlists', config['input']['bwlists_loc'])
         self.store('label', config['input']['label'])
@@ -216,6 +217,16 @@ class LocalComputationState(AppState):
         self.register_transition(AGGREGATION, Role.COORDINATOR)
         self.register_transition(AWAIT_AGGREGATION, Role.PARTICIPANT)
 
+    def convert_np_arrays(self, obj):
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif isinstance(obj, dict):
+                return {k: self.convert_np_arrays(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [self.convert_np_arrays(i) for i in obj]
+            else:
+                return obj
+
     def run(self):
         output_dir = "/mnt/output"
         iteration = self.load('iteration')
@@ -235,7 +246,8 @@ class LocalComputationState(AppState):
         mu = self.load('mu')
         epochs = self.load('epochs')
         lr = self.load('lr')
-        
+
+        start_time = time.time()
         participant = Coordinator() if self.is_coordinator else Client()
 
         if iteration == 1:
@@ -264,6 +276,8 @@ class LocalComputationState(AppState):
                                                                 max_changes = max_changes_fusion)
 
             client_cpts = participant.compute_local_cpts_from_structure_and_data(client_network, dataset)
+            
+            self.log(f"Local computation time: {time.time() - start_time:.2f}s")
 
             if iteration > max_iterations:
                 results_path = os.path.join(output_dir, "results.csv")
@@ -287,6 +301,9 @@ class LocalComputationState(AppState):
                 "iteration": iteration
             }
 
+            serialized_payload = self.convert_np_arrays(client_payload)
+            payload_size = len(json.dumps(serialized_payload).encode('utf-8'))
+            self.log(f"Payload size: {payload_size / 1024:.2f} KB")
             visualization_path = os.path.join(output_dir, f"global_network_iter{iteration-1}.png")
             participant.visualize_network(global_network, save_path=visualization_path)
             local_visualization_path = os.path.join(output_dir, f"local_network_iter{iteration-1}.png")
@@ -294,7 +311,7 @@ class LocalComputationState(AppState):
 
         
         self.send_data_to_coordinator(client_payload)
-
+        
         if self.is_coordinator:
             return AGGREGATION
         else:
@@ -333,7 +350,6 @@ class AggregateState(AppState):
         output_dir = "/mnt/output"
         iteration = self.load('iteration')
         max_iterations = self.load('max_iterations')
-        forbidden_edges = self.load('forbidden_edges')
 
         addition_threshold = self.load('addition_threshold')
         removal_threshold = self.load('removal_threshold')
@@ -345,7 +361,6 @@ class AggregateState(AppState):
 
         coordinator = Coordinator()
         client_payload = self.gather_data()
-        prev_aggregated_cpts = self.load('aggregated_cpts')
 
         if iteration == 1:
             self.log("[COORDINATOR] Building network structure based on expert knowledge...")
@@ -364,10 +379,9 @@ class AggregateState(AppState):
                                 addition_threshold=addition_threshold,
                                 removal_threshold=removal_threshold, 
                                 reversal_threshold=reversal_threshold,
-                                node_addition_threshold=node_addition_threshold,
-                                forbidden_edges = None
+                                node_addition_threshold=node_addition_threshold
                             )
-            global_network = coordinator.build_model_from_cpts(aggregated_cpts, forbidden_edges=None)
+            global_network = coordinator.build_model_from_cpts(aggregated_cpts)
 
         self.store("aggregated_cpts", aggregated_cpts)
         self.store("global_network", global_network)
@@ -395,6 +409,15 @@ class AggregateState(AppState):
             "iteration": iteration,
             "message": "continue"
         }
+        temp_payload = {
+            "global_network": {"nodes": list(global_network.nodes()), "edges": list(global_network.edges())},
+            "aggregated_cpts": serialized_cpts,
+            "iteration": iteration,
+            "message": "continue"
+        }
+        coordinator_payload_size = len(json.dumps(temp_payload).encode('utf-8'))
+        self.log(f"Coordinator broadcast payload size: {coordinator_payload_size / 1024:.2f} KB")
+
         self.broadcast_data(coordinator_payload)
         self.log(f"[COORDINATOR] Broadcasting for iteration {iteration} (max iterations: {max_iterations})")
         return LOCAL_COMPUTATION
@@ -445,7 +468,7 @@ class FinalState(AppState):
         accs = np.clip(accs, 0.0, 1.0)
         iterations = np.arange(1, len(accs) + 1)
 
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(5, 4))
         
         plt.plot(iterations, accs, marker='o', linestyle='-', 
                 color='#22666F', linewidth=2, markersize=6, 
@@ -465,19 +488,8 @@ class FinalState(AppState):
                 tick_positions = np.append(tick_positions, max_iterations)
             plt.xticks(tick_positions)
         
-        min_acc = min(accs)
-        max_acc = max(accs)
-        
-        if max_acc >= 0.99:
-            plt.ylim(max(0.0, min_acc - 0.05), 1.02)
-            plt.yticks(np.arange(max(0.0, min_acc - 0.05), 1.05, 0.05))
-        elif min_acc <= 0.01:
-            plt.ylim(-0.02, max(1.0, max_acc + 0.05))
-            plt.yticks(np.arange(0.0, max(1.0, max_acc + 0.05), 0.1))
-        else:
-            buffer = (max_acc - min_acc) * 0.1 + 0.02
-            plt.ylim(max(0.0, min_acc - buffer), min(1.02, max_acc + buffer))
-            plt.yticks(np.arange(0.0, 1.05, 0.1))
+        plt.ylim(0.0, 1.0)
+        plt.yticks(np.arange(0.0, 1.05, 0.1))
         
         plt.grid(True, alpha=0.3, linestyle='--')
         
@@ -494,16 +506,6 @@ class FinalState(AppState):
                                     facecolor='yellow', 
                                     alpha=0.7,
                                     edgecolor='none'))
-        
-        stats_text = f'Final: {accs[-1]:.3f}\nBest: {max_acc:.3f}\nWorst: {min_acc:.3f}'
-        plt.text(0.98, 0.02, stats_text, 
-                transform=plt.gca().transAxes, 
-                verticalalignment='bottom',
-                horizontalalignment='right',
-                bbox=dict(boxstyle='round,pad=0.5', 
-                        facecolor='lightblue', 
-                        alpha=0.8),
-                fontsize=10)
         
         plt.tight_layout()
         
