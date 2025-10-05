@@ -157,7 +157,7 @@ class ReadInputState(AppState):
         with open(config_path) as f:
             config_file = yaml.load(f, Loader=yaml.FullLoader)
 
-        config = config_file['fc_fedbaynet_prox']
+        config = config_file['fc_fedbaynet']
         self.store('dataset', config['input']['dataset_loc'])
         self.store('bwlists', config['input']['bwlists_loc'])
         self.store('label', config['input']['label'])
