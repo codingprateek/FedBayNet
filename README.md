@@ -51,5 +51,6 @@ pip install -r requirements.txt
    ```
    The placeholder `dir_name` can be replaced with the following based on the associated datasets:
    - ckd_200: 200 samples,
-   - ckd_200_prox: 200 samples, non-IID data
+   - ckd_200_hetero: 200 samples, non-IID data
    - ckd_400: 400 samples
+   - ckd_200_hetero: 400 samples, non-IID data
